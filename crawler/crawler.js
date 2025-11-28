@@ -3,6 +3,7 @@ import { crawlAdzuna } from './sources/adzuna.js';
 import { crawlIndeed } from './sources/indeed.js';
 import { crawlLinkedIn } from './sources/linkedin.js';
 import { crawlReed } from './sources/reed.js';
+import { crawlTelegram } from './sources/telegram.js';
 import { filterJobsByProfile, deduplicateJobs } from './utils/jobFilter.js';
 import { config, defaultProfile } from './config.js';
 
@@ -18,7 +19,8 @@ export class JobCrawler {
             { name: 'Adzuna', enabled: !!config.apiKeys.adzuna.appId, crawl: crawlAdzuna },
             { name: 'Indeed', enabled: true, crawl: crawlIndeed },
             { name: 'LinkedIn', enabled: !!config.apiKeys.serpapi.apiKey, crawl: crawlLinkedIn },
-            { name: 'Reed', enabled: !!config.apiKeys.reed.apiKey, crawl: crawlReed }
+            { name: 'Reed', enabled: !!config.apiKeys.reed.apiKey, crawl: crawlReed },
+            { name: 'Telegram', enabled: true, crawl: crawlTelegram } // Enabled by default, but requires setup
         ];
     }
 

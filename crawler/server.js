@@ -80,6 +80,29 @@ app.post('/api/crawl/:source', async (req, res) => {
         const profile = req.body.profile || loadProfile();
         const crawler = new JobCrawler(profile);
         
+        // Handle LinkedIn and Telegram as special cases
+        if (source.toLowerCase() === 'linkedin') {
+            const { crawlLinkedIn } = await import('./sources/linkedin.js');
+            const jobs = await crawlLinkedIn(profile);
+            return res.json({
+                success: true,
+                jobs: jobs,
+                source: 'LinkedIn',
+                timestamp: new Date().toISOString()
+            });
+        }
+        
+        if (source.toLowerCase() === 'telegram') {
+            const { crawlTelegram } = await import('./sources/telegram.js');
+            const jobs = await crawlTelegram(profile);
+            return res.json({
+                success: true,
+                jobs: jobs,
+                source: 'Telegram',
+                timestamp: new Date().toISOString()
+            });
+        }
+        
         const result = await crawler.crawlSource(source);
         
         res.json({

@@ -1294,20 +1294,26 @@ class JobTracker {
             const data = await response.json();
             
             if (data.success && data.jobs) {
-                // Transform crawler jobs to match our format
-                return data.jobs.map(job => ({
-                    id: job.id || `crawler-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-                    title: job.title,
-                    company: job.company,
-                    location: job.location,
-                    url: job.url,
-                    description: job.description,
-                    created: job.created,
-                    salary: job.salary,
-                    type: job.type,
-                    remote: job.remote,
-                    source: job.source || 'Crawler'
-                }));
+                // Transform crawler jobs to match our format and calculate relevance
+                const profile = this.profile;
+                return data.jobs.map(job => {
+                    const formattedJob = {
+                        id: job.id || `crawler-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                        title: job.title,
+                        company: job.company,
+                        location: job.location,
+                        url: job.url,
+                        description: job.description,
+                        created: job.created,
+                        salary: job.salary,
+                        type: job.type,
+                        remote: job.remote,
+                        source: job.source || 'Crawler'
+                    };
+                    // Calculate relevance score
+                    formattedJob.relevanceScore = this.calculateJobRelevanceScore(formattedJob, profile);
+                    return formattedJob;
+                });
             }
             
             return [];
@@ -1328,6 +1334,74 @@ class JobTracker {
         `).join('');
     }
 
+    // Job relevance scoring system
+    calculateJobRelevanceScore(job, profile) {
+        if (!profile) return 0;
+        
+        let score = 0;
+        const title = (job.title || '').toLowerCase();
+        const description = (job.description || '').toLowerCase();
+        const location = (job.location || '').toLowerCase();
+        const combinedText = `${title} ${description}`.toLowerCase();
+        
+        const preferredRoles = profile.preferred_roles || [];
+        const skills = profile.skills || [];
+        const targetLocations = profile.target_locations || [];
+        const industries = profile.industries || [];
+        
+        // Role match (high weight - up to 40 points)
+        const roleMatches = preferredRoles.filter(role => {
+            const roleLower = role.toLowerCase().replace(/senior |lead |junior /gi, '').trim();
+            return title.includes(roleLower) || combinedText.includes(roleLower);
+        });
+        if (roleMatches.length > 0) {
+            score += Math.min(40, 20 + (roleMatches.length * 10)); // Exact title match gets more points
+            if (title.includes(roleMatches[0].toLowerCase())) score += 10;
+        }
+        
+        // Location match (high weight - up to 25 points)
+        const locationMatches = targetLocations.filter(targetLoc => {
+            const targetLower = targetLoc.toLowerCase();
+            return location.includes(targetLower) || location.includes('remote') || location.includes('anywhere');
+        });
+        if (locationMatches.length > 0) {
+            score += 25;
+        } else if (location.includes('remote') || location.includes('anywhere')) {
+            score += 15; // Remote is good but less than specific location
+        }
+        
+        // Skills match (medium weight - up to 25 points)
+        const matchingSkills = skills.filter(skill => {
+            const skillLower = skill.toLowerCase();
+            return combinedText.includes(skillLower);
+        });
+        if (matchingSkills.length > 0) {
+            score += Math.min(25, 5 + (matchingSkills.length * 3));
+        }
+        
+        // Industry match (low weight - up to 10 points)
+        industries.forEach(industry => {
+            if (combinedText.includes(industry.toLowerCase())) {
+                score += 5;
+            }
+        });
+        
+        // Penalty for unrelated roles (marketing, sales, etc.)
+        const unrelatedKeywords = ['sales', 'marketing', 'account manager', 'recruiter', 'hr ', 'human resources'];
+        unrelatedKeywords.forEach(keyword => {
+            if (title.includes(keyword) && !preferredRoles.some(role => role.toLowerCase().includes(keyword))) {
+                score -= 30; // Heavy penalty
+            }
+        });
+        
+        // Bonus for exact role title match
+        if (preferredRoles.some(role => title === role.toLowerCase())) {
+            score += 10;
+        }
+        
+        return Math.max(0, Math.min(100, score)); // Clamp between 0-100
+    }
+    
     async searchJobsFromAPI(locations, roles, skills, dateFrom) {
         const allJobs = [];
         
@@ -1354,7 +1428,43 @@ class JobTracker {
             console.warn('Arbeitnow API error:', error.message);
         }
         
-        // 3. Try Adzuna API if configured (requires API key)
+        // 3. Try LinkedIn Jobs via backend crawler
+        try {
+            const linkedinJobs = await this.fetchLinkedInJobs(locations, roles);
+            allJobs.push(...linkedinJobs);
+            console.log(`Fetched ${linkedinJobs.length} jobs from LinkedIn`);
+        } catch (error) {
+            console.warn('LinkedIn API error:', error.message);
+        }
+        
+        // 4. Try GitHub Jobs
+        try {
+            const githubJobs = await this.fetchGitHubJobs(searchTerms);
+            allJobs.push(...githubJobs);
+            console.log(`Fetched ${githubJobs.length} jobs from GitHub Jobs`);
+        } catch (error) {
+            console.warn('GitHub Jobs API error:', error.message);
+        }
+        
+        // 5. Try We Work Remotely
+        try {
+            const wwrJobs = await this.fetchWeWorkRemotelyJobs(searchTerms);
+            allJobs.push(...wwrJobs);
+            console.log(`Fetched ${wwrJobs.length} jobs from We Work Remotely`);
+        } catch (error) {
+            console.warn('We Work Remotely API error:', error.message);
+        }
+        
+        // 6. Try Telegram channels
+        try {
+            const telegramJobs = await this.fetchTelegramJobs();
+            allJobs.push(...telegramJobs);
+            console.log(`Fetched ${telegramJobs.length} jobs from Telegram channels`);
+        } catch (error) {
+            console.warn('Telegram scraping error:', error.message);
+        }
+        
+        // 7. Try Adzuna API if configured (requires API key)
         if (window.JobAPIConfig?.adzuna?.enabled && window.JobAPIConfig?.adzuna?.appId) {
             try {
                 const adzunaJobs = await this.fetchAdzunaJobs(locations, roles);
@@ -1365,8 +1475,14 @@ class JobTracker {
             }
         }
         
-        // If we got real jobs, return them
+        // If we got real jobs, score and filter them
         if (allJobs.length > 0) {
+            // Score each job based on relevance
+            const profile = this.profile;
+            allJobs.forEach(job => {
+                job.relevanceScore = this.calculateJobRelevanceScore(job, profile);
+            });
+            
             // Deduplicate by URL
             const seen = new Set();
             const uniqueJobs = allJobs.filter(job => {
@@ -1374,7 +1490,15 @@ class JobTracker {
                 seen.add(job.url);
                 return true;
             });
-            return uniqueJobs;
+            
+            // Filter jobs with minimum relevance score (at least 20/100)
+            // Sort by relevance score (highest first)
+            const relevantJobs = uniqueJobs
+                .filter(job => job.relevanceScore >= 20)
+                .sort((a, b) => b.relevanceScore - a.relevanceScore);
+            
+            console.log(`Filtered ${uniqueJobs.length} jobs -> ${relevantJobs.length} relevant jobs (score >= 20)`);
+            return relevantJobs;
         }
         
         // Fallback: return empty array (no mock data)
@@ -1530,6 +1654,177 @@ class JobTracker {
         return jobs;
     }
     
+    async fetchLinkedInJobs(locations, roles) {
+        // Try to use backend crawler API first (if available)
+        const crawlerApiUrl = window.CRAWLER_API_URL || 'http://localhost:3000/api/crawl';
+        
+        try {
+            if (!this.profile) {
+                await this.loadProfile();
+            }
+            
+            const response = await fetch(`${crawlerApiUrl}/linkedin`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    profile: this.profile
+                })
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success && data.jobs) {
+                    return data.jobs.map(job => ({
+                        ...job,
+                        source: 'LinkedIn'
+                    }));
+                }
+            }
+        } catch (error) {
+            console.warn('LinkedIn crawler API not available:', error.message);
+        }
+        
+        // Fallback: Try LinkedIn RSS feeds (limited but free)
+        const jobs = [];
+        try {
+            // LinkedIn doesn't have a public API, but we can try RSS feeds
+            // Note: This requires backend proxy due to CORS
+            const rssUrl = `https://www.linkedin.com/jobs/search?keywords=${encodeURIComponent(roles.slice(0, 2).join(' OR '))}&location=${encodeURIComponent(locations[0] || '')}`;
+            // For now, return empty - LinkedIn requires backend scraping
+            console.info('LinkedIn jobs require backend scraping via crawler API');
+        } catch (error) {
+            console.warn('LinkedIn fetch error:', error.message);
+        }
+        
+        return jobs;
+    }
+    
+    async fetchGitHubJobs(searchTerms) {
+        // GitHub Jobs API (deprecated but still accessible via RSS)
+        const jobs = [];
+        
+        try {
+            // GitHub Jobs moved to RSS feed
+            const rssUrl = `https://jobs.github.com/positions.json?description=${encodeURIComponent(searchTerms.join(' '))}&location=remote`;
+            
+            // Note: GitHub Jobs API is deprecated, but positions.json still works
+            const response = await fetch(rssUrl);
+            if (!response.ok) return jobs;
+            
+            const data = await response.json();
+            if (Array.isArray(data)) {
+                const mappedJobs = data.slice(0, 25).map(job => ({
+                    id: `github-${job.id}`,
+                    title: job.title,
+                    company: job.company || 'Unknown',
+                    location: job.location || 'Remote',
+                    url: job.url,
+                    description: job.description ? this.stripHtml(job.description).substring(0, 300) + '...' : '',
+                    created: job.created_at,
+                    salary: null,
+                    type: job.type || 'Full-time',
+                    remote: job.location?.toLowerCase().includes('remote') ? 'Remote' : 'On-site',
+                    source: 'GitHub Jobs'
+                }));
+                jobs.push(...mappedJobs);
+            }
+        } catch (error) {
+            console.warn('GitHub Jobs API error:', error.message);
+        }
+        
+        return jobs;
+    }
+    
+    async fetchWeWorkRemotelyJobs(searchTerms) {
+        // We Work Remotely - requires scraping, but has RSS feed
+        const jobs = [];
+        
+        try {
+            // We Work Remotely has categories: design, programming, etc.
+            const categoryMap = {
+                'product designer': 'design',
+                'ux designer': 'design',
+                'ui designer': 'design',
+                'design': 'design',
+                'product engineer': 'programming',
+                'engineer': 'programming',
+                'software': 'programming'
+            };
+            
+            let category = 'design'; // Default
+            for (const term of searchTerms) {
+                for (const [keyword, cat] of Object.entries(categoryMap)) {
+                    if (term.includes(keyword)) {
+                        category = cat;
+                        break;
+                    }
+                }
+            }
+            
+            // Note: We Work Remotely doesn't have a public API
+            // Would need backend scraping for full integration
+            // For now, we'll try to use a RSS-like approach if available
+            console.info('We Work Remotely requires backend scraping');
+        } catch (error) {
+            console.warn('We Work Remotely error:', error.message);
+        }
+        
+        return jobs;
+    }
+    
+    async fetchTelegramJobs() {
+        // Telegram channel job scraping
+        // Note: This requires backend API due to CORS and Telegram API requirements
+        const jobs = [];
+        const telegramChannels = [
+            '@jobs_finding',
+            '@jaabz_com',
+            '@get_joboffer',
+            '@theyobby',
+            '@netherlandsjobs'
+        ];
+        
+        try {
+            const crawlerApiUrl = window.CRAWLER_API_URL || 'http://localhost:3000/api/crawl';
+            
+            // Try to fetch from backend crawler if available
+            if (!this.profile) {
+                await this.loadProfile();
+            }
+            
+            const response = await fetch(`${crawlerApiUrl}/telegram`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    profile: this.profile,
+                    channels: telegramChannels
+                })
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success && data.jobs) {
+                    return data.jobs.map(job => ({
+                        ...job,
+                        source: job.source || `Telegram - ${job.channel || 'Unknown'}`
+                    }));
+                }
+            }
+        } catch (error) {
+            console.warn('Telegram crawler API not available:', error.message);
+        }
+        
+        // Fallback: Try to use Telegram public channel URLs
+        // Note: This would require browser extension or backend proxy
+        console.info('Telegram scraping requires backend API integration');
+        
+        return jobs;
+    }
+    
     stripHtml(html) {
         const doc = new DOMParser().parseFromString(html, 'text/html');
         return doc.body.textContent || '';
@@ -1668,6 +1963,14 @@ class JobTracker {
                         ` : ''}
                     </div>
                     <div class="suggested-job-meta">
+                        ${job.relevanceScore !== undefined ? `
+                        <div class="relevance-score" title="Match score based on your profile (${job.relevanceScore}/100)">
+                            <span class="score-label">Match:</span>
+                            <span class="score-value score-${job.relevanceScore >= 70 ? 'high' : job.relevanceScore >= 40 ? 'medium' : 'low'}">
+                                ${job.relevanceScore}%
+                            </span>
+                        </div>
+                        ` : ''}
                         <div class="job-post-date">
                             <span class="date-label">Posted:</span>
                             <span class="date-value">${formattedDate}</span>
