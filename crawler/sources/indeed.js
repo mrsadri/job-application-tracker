@@ -1,6 +1,6 @@
 // Indeed Job Source (using SerpAPI or direct scraping)
 import axios from 'axios';
-import cheerio from 'cheerio';
+import * as cheerio from 'cheerio';
 import { config } from '../config.js';
 import { normalizeJobData } from '../utils/jobFilter.js';
 import { canCrawl } from '../utils/robots.js';

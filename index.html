@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>Dublin Job Application Tracker</title>
+    <title>CareerTracker - Job Application Manager</title>
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -27,10 +27,23 @@
     <div id="status-announcements" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
     
     <div class="container">
-        <header>
-            <h1>🇮🇪 Dublin Job Application Tracker</h1>
-            <p class="subtitle">Organize your job search for immigration to Dublin</p>
-        </header>
+        <!-- Navigation Bar -->
+        <nav class="main-nav" role="navigation" aria-label="Main navigation">
+            <div class="nav-brand">
+                <h1>🎯 CareerTracker</h1>
+            </div>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="#dashboard" class="nav-link active" data-page="dashboard" aria-current="page">Dashboard</a></li>
+                <li><a href="#applications" class="nav-link" data-page="applications">Applications</a></li>
+                <li><a href="#suggested-jobs" class="nav-link" data-page="suggested-jobs">Suggested Jobs</a></li>
+                <li><a href="#strategy1" class="nav-link" data-page="strategy1">Strategy 1: Learning</a></li>
+                <li><a href="#strategy2" class="nav-link" data-page="strategy2">Strategy 2: Networking</a></li>
+                <li><a href="#strategy3" class="nav-link" data-page="strategy3">Strategy 3: LinkedIn</a></li>
+            </ul>
+            <button class="nav-mobile-toggle" id="nav-mobile-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                <span aria-hidden="true">☰</span>
+            </button>
+        </nav>
 
         <div class="main-content">
             <!-- Mobile Menu Button -->
@@ -183,25 +196,127 @@
                 </div>
             </div>
 
+            <!-- Page Content Container -->
             <div class="content-area" id="main-content" role="main">
-                <div class="action-bar">
-                    <button class="btn btn-primary" id="add-job-btn" 
-                            aria-label="Add new application. Keyboard shortcut: Control or Command plus N"
-                            data-tooltip="Add a new job application (Ctrl/Cmd + N)">
-                        + Add New Application
-                    </button>
+                <!-- Dashboard Page -->
+                <div class="page" id="page-dashboard" data-page="dashboard">
+                    <div class="page-header">
+                        <h2>📊 Dashboard</h2>
+                        <p class="page-description">Overview of your job search progress</p>
+                    </div>
+                    
+                    <div class="dashboard-stats-grid">
+                        <div class="stat-card highlight">
+                            <div class="stat-card-icon">📋</div>
+                            <div class="stat-card-content">
+                                <div class="stat-card-value" id="dashboard-total-apps">0</div>
+                                <div class="stat-card-label">Total Applications</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">⏳</div>
+                            <div class="stat-card-content">
+                                <div class="stat-card-value" id="dashboard-pending-apps">0</div>
+                                <div class="stat-card-label">Pending</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">💼</div>
+                            <div class="stat-card-content">
+                                <div class="stat-card-value" id="dashboard-interview-apps">0</div>
+                                <div class="stat-card-label">Interviews</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">❌</div>
+                            <div class="stat-card-content">
+                                <div class="stat-card-value" id="dashboard-rejected-apps">0</div>
+                                <div class="stat-card-label">Rejected</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">✅</div>
+                            <div class="stat-card-content">
+                                <div class="stat-card-value" id="dashboard-accepted-apps">0</div>
+                                <div class="stat-card-label">Accepted</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-actions">
+                        <a href="#applications" class="btn btn-primary" data-page="applications">
+                            View All Applications →
+                        </a>
+                        <a href="#suggested-jobs" class="btn btn-secondary" data-page="suggested-jobs">
+                            Browse Suggested Jobs →
+                        </a>
+                    </div>
+
+                    <div class="dashboard-recent-section">
+                        <h3>Recent Applications</h3>
+                        <div id="dashboard-recent-applications" class="applications-list">
+                            <!-- Recent applications will be inserted here -->
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Suggested Jobs Section -->
-                <div class="suggested-jobs-section">
-                    <div class="section-header">
-                        <h2><span aria-hidden="true">💡</span> Suggested Job Positions</h2>
+                <!-- Applications Page -->
+                <div class="page" id="page-applications" data-page="applications" style="display: none;">
+                    <div class="page-header">
+                        <h2>📋 My Applications</h2>
+                        <button class="btn btn-primary" id="add-job-btn" 
+                                aria-label="Add new application. Keyboard shortcut: Control or Command plus N"
+                                data-tooltip="Add a new job application (Ctrl/Cmd + N)">
+                            + Add New Application
+                        </button>
+                    </div>
+
+                    <div id="applications-list" class="applications-list">
+                        <!-- Applications will be dynamically inserted here -->
+                    </div>
+                    <div id="applications-pagination" class="pagination-container" style="display: none;">
+                        <!-- Pagination controls will be inserted here -->
+                    </div>
+
+                    <div id="empty-state" class="empty-state" role="status">
+                        <div class="empty-state-icon" aria-hidden="true">📋</div>
+                        <h3>Start Your Job Search Journey</h3>
+                        <p>Track your applications and stay organized throughout your job search.</p>
+                        <button class="btn btn-primary btn-large" id="empty-state-add-btn"
+                                aria-label="Add your first application">
+                            Add Your First Application
+                        </button>
+                        <div class="empty-state-tips" style="margin-top: 30px; text-align: left; max-width: 500px; margin-left: auto; margin-right: auto;">
+                            <h4>Quick Tips:</h4>
+                            <ul style="list-style-position: inside; text-align: left;">
+                                <li>Add applications as soon as you apply</li>
+                                <li>Update status regularly to track progress</li>
+                                <li>Use notes to remember important details</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- Filtered Empty State -->
+                    <div id="filtered-empty" class="empty-state filtered-empty" style="display: none;" role="status">
+                        <div class="empty-state-icon" aria-hidden="true">🔍</div>
+                        <h3>No applications match your filters</h3>
+                        <p>Try adjusting your search terms or filters to see more results.</p>
+                        <button class="btn btn-secondary" id="clear-filters-btn">
+                            Clear All Filters
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Suggested Jobs Page -->
+                <div class="page" id="page-suggested-jobs" data-page="suggested-jobs" style="display: none;">
+                    <div class="page-header">
+                        <h2>💡 Suggested Job Positions</h2>
                         <button class="btn btn-secondary btn-small" id="refresh-jobs-btn"
                                 aria-label="Refresh suggested jobs">
                             <span aria-hidden="true">🔄</span> Update Jobs
                         </button>
                     </div>
-                    <p class="section-description">
+                    <p class="page-description">
                         Jobs matching your profile preferences (posted in the last 2 weeks)
                     </p>
                     <div id="suggested-jobs-list" class="suggested-jobs-list">
@@ -223,44 +338,382 @@
                     </div>
                 </div>
 
-                <!-- Divider -->
-                <div class="section-divider">
-                    <h2>📋 My Applications</h2>
-                </div>
+                <!-- Strategy 1: Enhanced Application Process & Learning -->
+                <div class="page" id="page-strategy1" data-page="strategy1" style="display: none;">
+                    <div class="page-header">
+                        <h2>📚 Strategy 1: Enhanced Application Process & Learning</h2>
+                        <p class="page-description">Track detailed application information, learn from results, and improve your success rate</p>
+                    </div>
+                    
+                    <div class="strategy-tabs">
+                        <button class="strategy-tab active" data-tab="hr-contacts">HR Contacts</button>
+                        <button class="strategy-tab" data-tab="rejection-emails">Rejection Emails</button>
+                        <button class="strategy-tab" data-tab="cover-letters">Cover Letters</button>
+                        <button class="strategy-tab" data-tab="process-logs">Process Logs</button>
+                        <button class="strategy-tab" data-tab="learning-analytics">Learning Analytics</button>
+                        <button class="strategy-tab" data-tab="source-details">Source Details</button>
+                    </div>
 
-                <div id="applications-list" class="applications-list">
-                    <!-- Applications will be dynamically inserted here -->
-                </div>
-                <div id="applications-pagination" class="pagination-container" style="display: none;">
-                    <!-- Pagination controls will be inserted here -->
-                </div>
+                    <!-- HR Contacts Tab -->
+                    <div class="strategy-tab-content active" id="tab-hr-contacts">
+                        <div class="tab-header">
+                            <h3>HR Contact Information</h3>
+                            <button class="btn btn-primary btn-small" id="add-hr-contact-btn">+ Add HR Contact</button>
+                        </div>
+                        <div id="hr-contacts-list" class="data-list"></div>
+                        <div id="hr-contacts-empty" class="empty-state">
+                            <div class="empty-state-icon" aria-hidden="true">👥</div>
+                            <h3>No HR contacts yet</h3>
+                            <p>Start building your HR contact database to track relationships and opportunities.</p>
+                        </div>
+                    </div>
 
-                <div id="empty-state" class="empty-state" role="status">
-                    <div class="empty-state-icon" aria-hidden="true">📋</div>
-                    <h3>Start Your Job Search Journey</h3>
-                    <p>Track your applications and stay organized throughout your job search.</p>
-                    <button class="btn btn-primary btn-large" id="empty-state-add-btn"
-                            aria-label="Add your first application">
-                        Add Your First Application
-                    </button>
-                    <div class="empty-state-tips" style="margin-top: 30px; text-align: left; max-width: 500px; margin-left: auto; margin-right: auto;">
-                        <h4>Quick Tips:</h4>
-                        <ul style="list-style-position: inside; text-align: left;">
-                            <li>Add applications as soon as you apply</li>
-                            <li>Update status regularly to track progress</li>
-                            <li>Use notes to remember important details</li>
-                        </ul>
+                    <!-- Rejection Emails Tab -->
+                    <div class="strategy-tab-content" id="tab-rejection-emails">
+                        <div class="tab-header">
+                            <h3>Rejection Email Analysis</h3>
+                            <button class="btn btn-primary btn-small" id="add-rejection-email-btn">+ Add Rejection Email</button>
+                        </div>
+                        <div id="rejection-emails-list" class="data-list"></div>
+                        <div id="rejection-emails-empty" class="empty-state">
+                            <div class="empty-state-icon" aria-hidden="true">📧</div>
+                            <h3>No rejection emails stored</h3>
+                            <p>Store rejection emails to analyze patterns and improve future applications.</p>
+                        </div>
+                    </div>
+
+                    <!-- Cover Letters Tab -->
+                    <div class="strategy-tab-content" id="tab-cover-letters">
+                        <div class="tab-header">
+                            <h3>Cover Letter Management</h3>
+                            <button class="btn btn-primary btn-small" id="add-cover-letter-btn">+ Add Cover Letter</button>
+                        </div>
+                        <div id="cover-letters-list" class="data-list"></div>
+                        <div id="cover-letters-empty" class="empty-state">
+                            <div class="empty-state-icon" aria-hidden="true">📝</div>
+                            <h3>No cover letters stored</h3>
+                            <p>Store and version your cover letters to track which ones are most effective.</p>
+                        </div>
+                    </div>
+
+                    <!-- Process Logs Tab -->
+                    <div class="strategy-tab-content" id="tab-process-logs">
+                        <div class="tab-header">
+                            <h3>Application Process Logs</h3>
+                        </div>
+                        <div class="form-group">
+                            <label for="process-log-application-select">Select Application:</label>
+                            <select id="process-log-application-select" class="filter-select">
+                                <option value="">All Applications</option>
+                            </select>
+                        </div>
+                        <div id="process-logs-list" class="data-list"></div>
+                        <div id="process-logs-empty" class="empty-state">
+                            <div class="empty-state-icon" aria-hidden="true">📋</div>
+                            <h3>No process logs yet</h3>
+                            <p>Process logs will appear here when you add steps to your applications.</p>
+                        </div>
+                    </div>
+
+                    <!-- Learning Analytics Tab -->
+                    <div class="strategy-tab-content" id="tab-learning-analytics">
+                        <div class="tab-header">
+                            <h3>Learning Analytics Dashboard</h3>
+                        </div>
+                        <div id="learning-analytics-content" class="analytics-dashboard">
+                            <div class="analytics-grid">
+                                <div class="analytics-card">
+                                    <h4>Success Rate by Source</h4>
+                                    <div id="source-success-chart"></div>
+                                </div>
+                                <div class="analytics-card">
+                                    <h4>Rejection Reasons</h4>
+                                    <div id="rejection-reasons-chart"></div>
+                                </div>
+                                <div class="analytics-card">
+                                    <h4>Cover Letter Effectiveness</h4>
+                                    <div id="cover-letter-effectiveness"></div>
+                                </div>
+                                <div class="analytics-card">
+                                    <h4>Timeline Analysis</h4>
+                                    <div id="timeline-analysis"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Source Details Tab -->
+                    <div class="strategy-tab-content" id="tab-source-details">
+                        <div class="tab-header">
+                            <h3>Enhanced Source Tracking</h3>
+                        </div>
+                        <div id="source-details-list" class="data-list"></div>
+                        <div id="source-details-empty" class="empty-state">
+                            <div class="empty-state-icon" aria-hidden="true">🔍</div>
+                            <h3>No source details tracked</h3>
+                            <p>Source details are automatically tracked when you add applications.</p>
+                        </div>
                     </div>
                 </div>
-                
-                <!-- Filtered Empty State -->
-                <div id="filtered-empty" class="empty-state filtered-empty" style="display: none;" role="status">
-                    <div class="empty-state-icon" aria-hidden="true">🔍</div>
-                    <h3>No applications match your filters</h3>
-                    <p>Try adjusting your search terms or filters to see more results.</p>
-                    <button class="btn btn-secondary" id="clear-filters-btn">
-                        Clear All Filters
-                    </button>
+
+                <!-- Strategy 2: Network Building & Recruiter Management -->
+                <div class="page" id="page-strategy2" data-page="strategy2" style="display: none;">
+                    <div class="page-header">
+                        <h2>🤝 Strategy 2: Network Building & Recruiter Management</h2>
+                        <p class="page-description">Build relationships with recruiters, hiring managers, and industry professionals</p>
+                    </div>
+                    
+                    <div class="strategy-tabs">
+                        <button class="strategy-tab active" data-tab="recruiters">Recruiters</button>
+                        <button class="strategy-tab" data-tab="recruiter-interactions">Recruiter Interactions</button>
+                        <button class="strategy-tab" data-tab="hiring-managers">Hiring Managers</button>
+                        <button class="strategy-tab" data-tab="networking">Networking Activities</button>
+                        <button class="strategy-tab" data-tab="ai-adviser">AI Job Adviser</button>
+                        <button class="strategy-tab" data-tab="recruiter-analytics">Recruiter Analytics</button>
+                    </div>
+
+                    <!-- Recruiters Tab -->
+                    <div class="strategy-tab-content active" id="tab-recruiters">
+                        <div class="tab-header">
+                            <h3>Recruiter Contacts</h3>
+                            <button class="btn btn-primary btn-small" id="add-recruiter-btn">+ Add Recruiter</button>
+                        </div>
+                        <div id="recruiters-list" class="data-list"></div>
+                        <div id="recruiters-empty" class="empty-state">
+                            <div class="empty-state-icon" aria-hidden="true">👔</div>
+                            <h3>No recruiters in your network</h3>
+                            <p>Start building your recruiter network to access more opportunities.</p>
+                        </div>
+                    </div>
+
+                    <!-- Recruiter Interactions Tab -->
+                    <div class="strategy-tab-content" id="tab-recruiter-interactions">
+                        <div class="tab-header">
+                            <h3>Recruiter Interactions</h3>
+                            <button class="btn btn-primary btn-small" id="add-recruiter-interaction-btn">+ Log Interaction</button>
+                        </div>
+                        <div class="form-group">
+                            <label for="interaction-recruiter-select">Filter by Recruiter:</label>
+                            <select id="interaction-recruiter-select" class="filter-select">
+                                <option value="">All Recruiters</option>
+                            </select>
+                        </div>
+                        <div id="recruiter-interactions-list" class="data-list"></div>
+                        <div id="recruiter-interactions-empty" class="empty-state">
+                            <div class="empty-state-icon" aria-hidden="true">💬</div>
+                            <h3>No interactions logged</h3>
+                            <p>Track all your communications with recruiters to maintain relationships.</p>
+                        </div>
+                    </div>
+
+                    <!-- Hiring Managers Tab -->
+                    <div class="strategy-tab-content" id="tab-hiring-managers">
+                        <div class="tab-header">
+                            <h3>Hiring Manager Contacts</h3>
+                            <button class="btn btn-primary btn-small" id="add-hiring-manager-btn">+ Add Hiring Manager</button>
+                        </div>
+                        <div id="hiring-managers-list" class="data-list"></div>
+                        <div id="hiring-managers-empty" class="empty-state">
+                            <div class="empty-state-icon" aria-hidden="true">👤</div>
+                            <h3>No hiring managers in your network</h3>
+                            <p>Connect with hiring managers and lead designers for direct opportunities.</p>
+                        </div>
+                    </div>
+
+                    <!-- Networking Activities Tab -->
+                    <div class="strategy-tab-content" id="tab-networking">
+                        <div class="tab-header">
+                            <h3>Networking Activities</h3>
+                            <button class="btn btn-primary btn-small" id="add-networking-activity-btn">+ Log Activity</button>
+                        </div>
+                        <div id="networking-activities-list" class="data-list"></div>
+                        <div id="networking-activities-empty" class="empty-state">
+                            <div class="empty-state-icon" aria-hidden="true">🌐</div>
+                            <h3>No networking activities logged</h3>
+                            <p>Track your networking efforts to build meaningful professional relationships.</p>
+                        </div>
+                    </div>
+
+                    <!-- AI Job Adviser Tab -->
+                    <div class="strategy-tab-content" id="tab-ai-adviser">
+                        <div class="tab-header">
+                            <h3>AI Job Adviser</h3>
+                            <button class="btn btn-primary btn-small" id="generate-ai-tasks-btn">Generate Tasks</button>
+                        </div>
+                        <div id="ai-tasks-list" class="data-list"></div>
+                        <div id="ai-guidance-content" class="ai-guidance-section">
+                            <h4>Personalized Guidance</h4>
+                            <div id="ai-guidance-text" class="guidance-text"></div>
+                        </div>
+                        <div id="ai-adviser-empty" class="empty-state">
+                            <div class="empty-state-icon" aria-hidden="true">🤖</div>
+                            <h3>AI Job Adviser Ready</h3>
+                            <p>Get personalized task recommendations and guidance based on your application history.</p>
+                        </div>
+                    </div>
+
+                    <!-- Recruiter Analytics Tab -->
+                    <div class="strategy-tab-content" id="tab-recruiter-analytics">
+                        <div class="tab-header">
+                            <h3>Recruiter Effectiveness Analytics</h3>
+                        </div>
+                        <div id="recruiter-analytics-content" class="analytics-dashboard">
+                            <div class="analytics-grid">
+                                <div class="analytics-card">
+                                    <h4>Top Performing Recruiters</h4>
+                                    <div id="top-recruiters-chart"></div>
+                                </div>
+                                <div class="analytics-card">
+                                    <h4>Response Rates</h4>
+                                    <div id="response-rates-chart"></div>
+                                </div>
+                                <div class="analytics-card">
+                                    <h4>Opportunities by Recruiter</h4>
+                                    <div id="opportunities-by-recruiter"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Strategy 3: LinkedIn Presence & Personal Branding -->
+                <div class="page" id="page-strategy3" data-page="strategy3" style="display: none;">
+                    <div class="page-header">
+                        <h2>💼 Strategy 3: LinkedIn Presence & Personal Branding</h2>
+                        <p class="page-description">Build your personal brand and attract opportunities through LinkedIn</p>
+                    </div>
+                    
+                    <div class="strategy-tabs">
+                        <button class="strategy-tab active" data-tab="content-planning">Content Planning</button>
+                        <button class="strategy-tab" data-tab="activity-tracking">Activity Tracking</button>
+                        <button class="strategy-tab" data-tab="portfolio">Portfolio</button>
+                        <button class="strategy-tab" data-tab="profile-views">Profile Views</button>
+                        <button class="strategy-tab" data-tab="engagement-analytics">Engagement Analytics</button>
+                        <button class="strategy-tab" data-tab="content-calendar">Content Calendar</button>
+                        <button class="strategy-tab" data-tab="inbound-opportunities">Inbound Opportunities</button>
+                        <button class="strategy-tab" data-tab="weekly-tasks">Weekly Tasks</button>
+                    </div>
+
+                    <!-- Content Planning Tab -->
+                    <div class="strategy-tab-content active" id="tab-content-planning">
+                        <div class="tab-header">
+                            <h3>LinkedIn Content Planning</h3>
+                            <button class="btn btn-primary btn-small" id="add-content-idea-btn">+ Add Content Idea</button>
+                        </div>
+                        <div id="content-ideas-list" class="data-list"></div>
+                        <div id="content-ideas-empty" class="empty-state">
+                            <div class="empty-state-icon" aria-hidden="true">✍️</div>
+                            <h3>No content ideas yet</h3>
+                            <p>Plan your LinkedIn content to build your personal brand.</p>
+                        </div>
+                    </div>
+
+                    <!-- Activity Tracking Tab -->
+                    <div class="strategy-tab-content" id="tab-activity-tracking">
+                        <div class="tab-header">
+                            <h3>LinkedIn Activity Log</h3>
+                            <button class="btn btn-primary btn-small" id="add-linkedin-activity-btn">+ Log Activity</button>
+                        </div>
+                        <div id="linkedin-activities-list" class="data-list"></div>
+                        <div id="linkedin-activities-empty" class="empty-state">
+                            <div class="empty-state-icon" aria-hidden="true">📱</div>
+                            <h3>No activities logged</h3>
+                            <p>Track your LinkedIn posts, articles, comments, and connections.</p>
+                        </div>
+                    </div>
+
+                    <!-- Portfolio Tab -->
+                    <div class="strategy-tab-content" id="tab-portfolio">
+                        <div class="tab-header">
+                            <h3>Portfolio Content Management</h3>
+                            <button class="btn btn-primary btn-small" id="add-portfolio-item-btn">+ Add Portfolio Item</button>
+                        </div>
+                        <div id="portfolio-items-list" class="data-list"></div>
+                        <div id="portfolio-items-empty" class="empty-state">
+                            <div class="empty-state-icon" aria-hidden="true">🎨</div>
+                            <h3>No portfolio items yet</h3>
+                            <p>Manage your portfolio content and showcase your work on LinkedIn.</p>
+                        </div>
+                    </div>
+
+                    <!-- Profile Views Tab -->
+                    <div class="strategy-tab-content" id="tab-profile-views">
+                        <div class="tab-header">
+                            <h3>LinkedIn Profile Views</h3>
+                            <button class="btn btn-primary btn-small" id="add-profile-view-btn">+ Log Profile View</button>
+                        </div>
+                        <div id="profile-views-list" class="data-list"></div>
+                        <div id="profile-views-empty" class="empty-state">
+                            <div class="empty-state-icon" aria-hidden="true">👁️</div>
+                            <h3>No profile views logged</h3>
+                            <p>Track who views your LinkedIn profile to identify potential opportunities.</p>
+                        </div>
+                    </div>
+
+                    <!-- Engagement Analytics Tab -->
+                    <div class="strategy-tab-content" id="tab-engagement-analytics">
+                        <div class="tab-header">
+                            <h3>LinkedIn Engagement Analytics</h3>
+                        </div>
+                        <div id="engagement-analytics-content" class="analytics-dashboard">
+                            <div class="analytics-grid">
+                                <div class="analytics-card">
+                                    <h4>Content Performance</h4>
+                                    <div id="content-performance-chart"></div>
+                                </div>
+                                <div class="analytics-card">
+                                    <h4>Engagement Trends</h4>
+                                    <div id="engagement-trends-chart"></div>
+                                </div>
+                                <div class="analytics-card">
+                                    <h4>Audience Insights</h4>
+                                    <div id="audience-insights"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Content Calendar Tab -->
+                    <div class="strategy-tab-content" id="tab-content-calendar">
+                        <div class="tab-header">
+                            <h3>Content Calendar</h3>
+                            <button class="btn btn-primary btn-small" id="add-calendar-event-btn">+ Schedule Content</button>
+                        </div>
+                        <div id="content-calendar-view" class="calendar-view"></div>
+                        <div id="content-calendar-empty" class="empty-state">
+                            <div class="empty-state-icon" aria-hidden="true">📅</div>
+                            <h3>No content scheduled</h3>
+                            <p>Plan and schedule your LinkedIn content for consistent presence.</p>
+                        </div>
+                    </div>
+
+                    <!-- Inbound Opportunities Tab -->
+                    <div class="strategy-tab-content" id="tab-inbound-opportunities">
+                        <div class="tab-header">
+                            <h3>Inbound Opportunities</h3>
+                            <button class="btn btn-primary btn-small" id="add-inbound-opportunity-btn">+ Log Opportunity</button>
+                        </div>
+                        <div id="inbound-opportunities-list" class="data-list"></div>
+                        <div id="inbound-opportunities-empty" class="empty-state">
+                            <div class="empty-state-icon" aria-hidden="true">🎯</div>
+                            <h3>No inbound opportunities yet</h3>
+                            <p>Track when companies or recruiters approach you directly through LinkedIn.</p>
+                        </div>
+                    </div>
+
+                    <!-- Weekly Tasks Tab -->
+                    <div class="strategy-tab-content" id="tab-weekly-tasks">
+                        <div class="tab-header">
+                            <h3>AI Weekly LinkedIn Tasks</h3>
+                            <button class="btn btn-primary btn-small" id="generate-weekly-tasks-btn">Generate Weekly Tasks</button>
+                        </div>
+                        <div id="weekly-tasks-list" class="data-list"></div>
+                        <div id="weekly-tasks-empty" class="empty-state">
+                            <div class="empty-state-icon" aria-hidden="true">📋</div>
+                            <h3>No weekly tasks generated</h3>
+                            <p>Get AI-powered weekly task lists to systematically build your LinkedIn presence.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -427,6 +880,605 @@
         </div>
     </div>
 
+    <!-- Strategy 1 Modals -->
+    <!-- HR Contact Modal -->
+    <div id="hr-contact-modal" class="modal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="hr-contact-modal-title">Add HR Contact</h2>
+                <button class="close-btn" id="close-hr-contact-modal">&times;</button>
+            </div>
+            <form id="hr-contact-form">
+                <div class="form-group">
+                    <label for="hr-name">Name <span class="required-indicator">*</span></label>
+                    <input type="text" id="hr-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="hr-email">Email <span class="required-indicator">*</span></label>
+                    <input type="email" id="hr-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="hr-company">Company</label>
+                    <input type="text" id="hr-company">
+                </div>
+                <div class="form-group">
+                    <label for="hr-phone">Phone</label>
+                    <input type="tel" id="hr-phone">
+                </div>
+                <div class="form-group">
+                    <label for="hr-linkedin">LinkedIn Profile</label>
+                    <input type="url" id="hr-linkedin">
+                </div>
+                <div class="form-group">
+                    <label for="hr-notes">Notes</label>
+                    <textarea id="hr-notes" rows="3"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-hr-contact-btn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+                <input type="hidden" id="hr-contact-id">
+            </form>
+        </div>
+    </div>
+
+    <!-- Rejection Email Modal -->
+    <div id="rejection-email-modal" class="modal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="rejection-email-modal-title">Add Rejection Email</h2>
+                <button class="close-btn" id="close-rejection-email-modal">&times;</button>
+            </div>
+            <form id="rejection-email-form">
+                <div class="form-group">
+                    <label for="rejection-application-select">Application <span class="required-indicator">*</span></label>
+                    <select id="rejection-application-select" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="rejection-email-content">Email Content <span class="required-indicator">*</span></label>
+                    <textarea id="rejection-email-content" rows="10" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="rejection-date">Rejection Date</label>
+                    <input type="date" id="rejection-date">
+                </div>
+                <div class="form-group">
+                    <label for="rejection-reason">Rejection Reason (if mentioned)</label>
+                    <input type="text" id="rejection-reason">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-rejection-email-btn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+                <input type="hidden" id="rejection-email-id">
+            </form>
+        </div>
+    </div>
+
+    <!-- Cover Letter Modal -->
+    <div id="cover-letter-modal" class="modal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="cover-letter-modal-title">Add Cover Letter</h2>
+                <button class="close-btn" id="close-cover-letter-modal">&times;</button>
+            </div>
+            <form id="cover-letter-form">
+                <div class="form-group">
+                    <label for="cover-letter-title">Title <span class="required-indicator">*</span></label>
+                    <input type="text" id="cover-letter-title" required>
+                </div>
+                <div class="form-group">
+                    <label for="cover-letter-application-select">Application</label>
+                    <select id="cover-letter-application-select"></select>
+                </div>
+                <div class="form-group">
+                    <label for="cover-letter-content">Content <span class="required-indicator">*</span></label>
+                    <textarea id="cover-letter-content" rows="15" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="cover-letter-version">Version</label>
+                    <input type="text" id="cover-letter-version" value="1.0">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-cover-letter-btn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+                <input type="hidden" id="cover-letter-id">
+            </form>
+        </div>
+    </div>
+
+    <!-- Process Log Entry Modal -->
+    <div id="process-log-modal" class="modal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="process-log-modal-title">Add Process Log Entry</h2>
+                <button class="close-btn" id="close-process-log-modal">&times;</button>
+            </div>
+            <form id="process-log-form">
+                <div class="form-group">
+                    <label for="process-log-application-select">Application <span class="required-indicator">*</span></label>
+                    <select id="process-log-application-select" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="process-log-step">Step Description <span class="required-indicator">*</span></label>
+                    <input type="text" id="process-log-step" required>
+                </div>
+                <div class="form-group">
+                    <label for="process-log-outcome">Outcome</label>
+                    <select id="process-log-outcome">
+                        <option value="pending">Pending</option>
+                        <option value="success">Success</option>
+                        <option value="failure">Failure</option>
+                        <option value="in-progress">In Progress</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="process-log-notes">Notes</label>
+                    <textarea id="process-log-notes" rows="4"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-process-log-btn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+                <input type="hidden" id="process-log-id">
+            </form>
+        </div>
+    </div>
+
+    <!-- Strategy 2 Modals -->
+    <!-- Recruiter Modal -->
+    <div id="recruiter-modal" class="modal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="recruiter-modal-title">Add Recruiter</h2>
+                <button class="close-btn" id="close-recruiter-modal">&times;</button>
+            </div>
+            <form id="recruiter-form">
+                <div class="form-group">
+                    <label for="recruiter-name">Name <span class="required-indicator">*</span></label>
+                    <input type="text" id="recruiter-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="recruiter-email">Email</label>
+                    <input type="email" id="recruiter-email">
+                </div>
+                <div class="form-group">
+                    <label for="recruiter-phone">Phone</label>
+                    <input type="tel" id="recruiter-phone">
+                </div>
+                <div class="form-group">
+                    <label for="recruiter-linkedin">LinkedIn Profile</label>
+                    <input type="url" id="recruiter-linkedin">
+                </div>
+                <div class="form-group">
+                    <label for="recruiter-company">Company/Agency</label>
+                    <input type="text" id="recruiter-company">
+                </div>
+                <div class="form-group">
+                    <label for="recruiter-specialization">Specialization</label>
+                    <input type="text" id="recruiter-specialization">
+                </div>
+                <div class="form-group">
+                    <label for="recruiter-location">Location Focus</label>
+                    <input type="text" id="recruiter-location">
+                </div>
+                <div class="form-group">
+                    <label for="recruiter-type">Type</label>
+                    <select id="recruiter-type">
+                        <option value="internal">Internal Recruiter</option>
+                        <option value="agency">Agency Recruiter</option>
+                        <option value="headhunter">Headhunter</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-recruiter-btn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+                <input type="hidden" id="recruiter-id">
+            </form>
+        </div>
+    </div>
+
+    <!-- Recruiter Interaction Modal -->
+    <div id="recruiter-interaction-modal" class="modal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="recruiter-interaction-modal-title">Log Recruiter Interaction</h2>
+                <button class="close-btn" id="close-recruiter-interaction-modal">&times;</button>
+            </div>
+            <form id="recruiter-interaction-form">
+                <div class="form-group">
+                    <label for="interaction-recruiter-select">Recruiter <span class="required-indicator">*</span></label>
+                    <select id="interaction-recruiter-select" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="interaction-date">Date <span class="required-indicator">*</span></label>
+                    <input type="date" id="interaction-date" required>
+                </div>
+                <div class="form-group">
+                    <label for="interaction-type">Type <span class="required-indicator">*</span></label>
+                    <select id="interaction-type" required>
+                        <option value="email">Email</option>
+                        <option value="call">Call</option>
+                        <option value="meeting">Meeting</option>
+                        <option value="linkedin">LinkedIn</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="interaction-summary">Summary <span class="required-indicator">*</span></label>
+                    <textarea id="interaction-summary" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="interaction-outcome">Outcome</label>
+                    <textarea id="interaction-outcome" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="interaction-next-steps">Next Steps</label>
+                    <textarea id="interaction-next-steps" rows="3"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-recruiter-interaction-btn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+                <input type="hidden" id="recruiter-interaction-id">
+            </form>
+        </div>
+    </div>
+
+    <!-- Hiring Manager Modal -->
+    <div id="hiring-manager-modal" class="modal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="hiring-manager-modal-title">Add Hiring Manager</h2>
+                <button class="close-btn" id="close-hiring-manager-modal">&times;</button>
+            </div>
+            <form id="hiring-manager-form">
+                <div class="form-group">
+                    <label for="hm-name">Name <span class="required-indicator">*</span></label>
+                    <input type="text" id="hm-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="hm-title">Title</label>
+                    <input type="text" id="hm-title">
+                </div>
+                <div class="form-group">
+                    <label for="hm-company">Company</label>
+                    <input type="text" id="hm-company">
+                </div>
+                <div class="form-group">
+                    <label for="hm-email">Email</label>
+                    <input type="email" id="hm-email">
+                </div>
+                <div class="form-group">
+                    <label for="hm-linkedin">LinkedIn Profile</label>
+                    <input type="url" id="hm-linkedin">
+                </div>
+                <div class="form-group">
+                    <label for="hm-department">Department</label>
+                    <input type="text" id="hm-department">
+                </div>
+                <div class="form-group">
+                    <label for="hm-location">Location</label>
+                    <input type="text" id="hm-location">
+                </div>
+                <div class="form-group">
+                    <label for="hm-category">Category</label>
+                    <select id="hm-category">
+                        <option value="hiring-manager">Hiring Manager</option>
+                        <option value="lead-designer">Lead Designer</option>
+                        <option value="design-director">Design Director</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-hiring-manager-btn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+                <input type="hidden" id="hiring-manager-id">
+            </form>
+        </div>
+    </div>
+
+    <!-- Networking Activity Modal -->
+    <div id="networking-activity-modal" class="modal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="networking-activity-modal-title">Log Networking Activity</h2>
+                <button class="close-btn" id="close-networking-activity-modal">&times;</button>
+            </div>
+            <form id="networking-activity-form">
+                <div class="form-group">
+                    <label for="networking-date">Date <span class="required-indicator">*</span></label>
+                    <input type="date" id="networking-date" required>
+                </div>
+                <div class="form-group">
+                    <label for="networking-contact">Contact Person</label>
+                    <input type="text" id="networking-contact">
+                </div>
+                <div class="form-group">
+                    <label for="networking-type">Type <span class="required-indicator">*</span></label>
+                    <select id="networking-type" required>
+                        <option value="coffee-chat">Coffee Chat</option>
+                        <option value="linkedin-message">LinkedIn Message</option>
+                        <option value="event">Event</option>
+                        <option value="conference">Conference</option>
+                        <option value="meetup">Meetup</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="networking-topic">Topic Discussed</label>
+                    <textarea id="networking-topic" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="networking-outcome">Outcome</label>
+                    <textarea id="networking-outcome" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="networking-follow-up">Follow-up Needed</label>
+                    <textarea id="networking-follow-up" rows="2"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-networking-activity-btn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+                <input type="hidden" id="networking-activity-id">
+            </form>
+        </div>
+    </div>
+
+    <!-- Strategy 3 Modals -->
+    <!-- Content Idea Modal -->
+    <div id="content-idea-modal" class="modal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="content-idea-modal-title">Add Content Idea</h2>
+                <button class="close-btn" id="close-content-idea-modal">&times;</button>
+            </div>
+            <form id="content-idea-form">
+                <div class="form-group">
+                    <label for="content-title">Title <span class="required-indicator">*</span></label>
+                    <input type="text" id="content-title" required>
+                </div>
+                <div class="form-group">
+                    <label for="content-topic">Topic</label>
+                    <input type="text" id="content-topic">
+                </div>
+                <div class="form-group">
+                    <label for="content-type">Content Type</label>
+                    <select id="content-type">
+                        <option value="article">Article</option>
+                        <option value="post">Post</option>
+                        <option value="carousel">Carousel</option>
+                        <option value="video">Video</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="content-target-audience">Target Audience</label>
+                    <input type="text" id="content-target-audience">
+                </div>
+                <div class="form-group">
+                    <label for="content-draft">Draft Content</label>
+                    <textarea id="content-draft" rows="10"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="content-publish-date">Publish Date</label>
+                    <input type="date" id="content-publish-date">
+                </div>
+                <div class="form-group">
+                    <label for="content-status">Status</label>
+                    <select id="content-status">
+                        <option value="draft">Draft</option>
+                        <option value="scheduled">Scheduled</option>
+                        <option value="published">Published</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-content-idea-btn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+                <input type="hidden" id="content-idea-id">
+            </form>
+        </div>
+    </div>
+
+    <!-- LinkedIn Activity Modal -->
+    <div id="linkedin-activity-modal" class="modal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="linkedin-activity-modal-title">Log LinkedIn Activity</h2>
+                <button class="close-btn" id="close-linkedin-activity-modal">&times;</button>
+            </div>
+            <form id="linkedin-activity-form">
+                <div class="form-group">
+                    <label for="linkedin-activity-date">Date <span class="required-indicator">*</span></label>
+                    <input type="date" id="linkedin-activity-date" required>
+                </div>
+                <div class="form-group">
+                    <label for="linkedin-activity-type">Type <span class="required-indicator">*</span></label>
+                    <select id="linkedin-activity-type" required>
+                        <option value="post">Post</option>
+                        <option value="article">Article</option>
+                        <option value="comment">Comment</option>
+                        <option value="connection">Connection</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="linkedin-activity-summary">Content Summary</label>
+                    <textarea id="linkedin-activity-summary" rows="4"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="linkedin-activity-link">Link to Post</label>
+                    <input type="url" id="linkedin-activity-link">
+                </div>
+                <div class="form-group">
+                    <label for="linkedin-activity-views">Views</label>
+                    <input type="number" id="linkedin-activity-views" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="linkedin-activity-likes">Likes</label>
+                    <input type="number" id="linkedin-activity-likes" min="0">
+                </div>
+                <div class="form-group">
+                    <label for="linkedin-activity-comments">Comments</label>
+                    <input type="number" id="linkedin-activity-comments" min="0">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-linkedin-activity-btn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+                <input type="hidden" id="linkedin-activity-id">
+            </form>
+        </div>
+    </div>
+
+    <!-- Portfolio Item Modal -->
+    <div id="portfolio-item-modal" class="modal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="portfolio-item-modal-title">Add Portfolio Item</h2>
+                <button class="close-btn" id="close-portfolio-item-modal">&times;</button>
+            </div>
+            <form id="portfolio-item-form">
+                <div class="form-group">
+                    <label for="portfolio-title">Title <span class="required-indicator">*</span></label>
+                    <input type="text" id="portfolio-title" required>
+                </div>
+                <div class="form-group">
+                    <label for="portfolio-description">Description</label>
+                    <textarea id="portfolio-description" rows="4"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="portfolio-type">Type</label>
+                    <select id="portfolio-type">
+                        <option value="project">Project</option>
+                        <option value="activity">Activity</option>
+                        <option value="achievement">Achievement</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="portfolio-date">Date</label>
+                    <input type="date" id="portfolio-date">
+                </div>
+                <div class="form-group">
+                    <label for="portfolio-linkedin-link">LinkedIn Post Link</label>
+                    <input type="url" id="portfolio-linkedin-link">
+                </div>
+                <div class="form-group">
+                    <label for="portfolio-status">Status</label>
+                    <select id="portfolio-status">
+                        <option value="draft">Draft</option>
+                        <option value="scheduled">Scheduled</option>
+                        <option value="published">Published</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-portfolio-item-btn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+                <input type="hidden" id="portfolio-item-id">
+            </form>
+        </div>
+    </div>
+
+    <!-- Profile View Modal -->
+    <div id="profile-view-modal" class="modal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="profile-view-modal-title">Log Profile View</h2>
+                <button class="close-btn" id="close-profile-view-modal">&times;</button>
+            </div>
+            <form id="profile-view-form">
+                <div class="form-group">
+                    <label for="profile-viewer-name">Viewer Name</label>
+                    <input type="text" id="profile-viewer-name">
+                </div>
+                <div class="form-group">
+                    <label for="profile-viewer-company">Company</label>
+                    <input type="text" id="profile-viewer-company">
+                </div>
+                <div class="form-group">
+                    <label for="profile-viewer-title">Title</label>
+                    <input type="text" id="profile-viewer-title">
+                </div>
+                <div class="form-group">
+                    <label for="profile-view-date">View Date</label>
+                    <input type="date" id="profile-view-date">
+                </div>
+                <div class="form-group">
+                    <label for="profile-view-source">Source</label>
+                    <input type="text" id="profile-view-source">
+                </div>
+                <div class="form-group">
+                    <label for="profile-view-follow-up">Follow-up Action</label>
+                    <textarea id="profile-view-follow-up" rows="3"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-profile-view-btn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+                <input type="hidden" id="profile-view-id">
+            </form>
+        </div>
+    </div>
+
+    <!-- Inbound Opportunity Modal -->
+    <div id="inbound-opportunity-modal" class="modal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="inbound-opportunity-modal-title">Log Inbound Opportunity</h2>
+                <button class="close-btn" id="close-inbound-opportunity-modal">&times;</button>
+            </div>
+            <form id="inbound-opportunity-form">
+                <div class="form-group">
+                    <label for="inbound-company">Company <span class="required-indicator">*</span></label>
+                    <input type="text" id="inbound-company" required>
+                </div>
+                <div class="form-group">
+                    <label for="inbound-contact-name">Contact Name</label>
+                    <input type="text" id="inbound-contact-name">
+                </div>
+                <div class="form-group">
+                    <label for="inbound-date">Date Contacted</label>
+                    <input type="date" id="inbound-date">
+                </div>
+                <div class="form-group">
+                    <label for="inbound-role">Role Offered</label>
+                    <input type="text" id="inbound-role">
+                </div>
+                <div class="form-group">
+                    <label for="inbound-source">Source</label>
+                    <select id="inbound-source">
+                        <option value="linkedin-message">LinkedIn Message</option>
+                        <option value="profile-view">Profile View</option>
+                        <option value="content-engagement">Content Engagement</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="inbound-status">Status</label>
+                    <select id="inbound-status">
+                        <option value="pending">Pending</option>
+                        <option value="interested">Interested</option>
+                        <option value="not-interested">Not Interested</option>
+                        <option value="converted">Converted to Application</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="inbound-notes">Notes</label>
+                    <textarea id="inbound-notes" rows="4"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-inbound-opportunity-btn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+                <input type="hidden" id="inbound-opportunity-id">
+            </form>
+        </div>
+    </div>
+
+    <script src="paths.config.js"></script>
     <script src="job-api-config.js"></script>
     <script src="script.js"></script>
 </body>

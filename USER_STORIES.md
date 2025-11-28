@@ -254,6 +254,15 @@
 - Crawler extracts: Job Title, Company, Location, Post Date, Description, Salary, Job Type, Remote Options, Source URL, Source Name
 - Crawler filters jobs based on user profile preferences (locations, roles, skills)
 
+**Implementation Status:** ✅ **Partially Implemented**
+- Frontend integrates with multiple free job APIs: Remotive, Arbeitnow, GitHub Jobs
+- Backend crawler service available for Adzuna, Indeed, LinkedIn, Reed (requires API keys)
+- Real-time job fetching from public APIs when "Update Jobs" is clicked
+- Jobs are scored for relevance based on profile preferences
+- Automatic deduplication by URL
+- Falls back gracefully when APIs are unavailable
+- Backend crawler service can be deployed separately for enhanced functionality
+
 ---
 
 ### US-019: Display Job Source on Suggested Job Cards
@@ -532,11 +541,363 @@
 - Application is accessible via `https://[username].github.io/[repository-name]/`
 - All features function correctly in the hosted environment (localStorage, modals, filtering, etc.)
 
+**Implementation Status:** ✅ **Fully Implemented**
+- Application successfully deployed to GitHub Pages
+- Live site: https://mrsadri.github.io/job-application-tracker/
+- All features tested and working in production environment
+- HTTPS enforced
+- All static assets properly configured
+- Deployment documentation included in README and DEPLOYMENT.md
+
+---
+
+## Strategy 1: Enhanced Application Process & Learning
+
+### US-038: Log HR Contact Information
+**As a** job seeker,  
+**I want to** store HR email addresses and contact information for each application,  
+**So that** I can maintain a database of HR contacts for future opportunities and follow-ups.
+
+**Acceptance Criteria:**
+- HR email field is available in the application form
+- HR contact name and email are stored with each application
+- HR contact information is displayed on the application card
+- Multiple HR contacts can be stored per application
+- HR email addresses are validated for proper format
+- HR contacts can be searched and filtered across all applications
+
+---
+
+### US-039: Store Rejection Emails
+**As a** job seeker,  
+**I want to** save rejection emails I receive for each application,  
+**So that** I can analyze rejection patterns, learn from feedback, and improve future applications.
+
+**Acceptance Criteria:**
+- Rejection email content can be stored with each application
+- Rejection email date is automatically recorded when saved
+- Rejection emails are displayed in the application details
+- Rejection emails can be searched and filtered
+- Rejection email template/format can be analyzed for patterns
+- Rejection reasons can be extracted and categorized
+
+---
+
+### US-040: Store Cover Letters
+**As a** job seeker,  
+**I want to** save the cover letter I used for each application,  
+**So that** I can track which cover letters were most effective and reuse successful templates.
+
+**Acceptance Criteria:**
+- Cover letter field (textarea or file upload) is available in the application form
+- Cover letter content is stored with each application
+- Cover letter can be viewed and edited from the application details
+- Cover letter can be copied for reuse in future applications
+- Cover letter version history can be tracked
+- Cover letters can be searched by content
+
+---
+
+### US-041: Track Application Process Log
+**As a** job seeker,  
+**I want to** maintain a detailed log of each step in my application process,  
+**So that** I can learn from each application experience and identify what works best.
+
+**Acceptance Criteria:**
+- Process log section is available for each application
+- Each log entry includes: timestamp, step description, outcome, notes
+- Log entries can be added manually or automatically
+- Log entries are displayed chronologically
+- Log entries can include: application submitted, HR contacted, interview scheduled, rejection received, etc.
+- Log entries can be exported for analysis
+- Process log can be filtered by step type or outcome
+
+---
+
+### US-042: Learn from Application Results
+**As a** job seeker,  
+**I want to** analyze application results and outcomes to identify patterns and improvements,  
+**So that** I can continuously improve my application strategy and success rate.
+
+**Acceptance Criteria:**
+- Application results dashboard shows success rates by source, company, role type
+- Rejection reasons are categorized and analyzed
+- Success patterns are identified (e.g., which cover letters led to interviews)
+- Recommendations are generated based on historical data
+- Comparison view shows what worked vs. what didn't
+- Learning insights are displayed in a dedicated section
+
+---
+
+### US-043: Store Application Source Details
+**As a** job seeker,  
+**I want to** record detailed information about where I found each job posting,  
+**So that** I can identify the most effective job sources and focus my efforts accordingly.
+
+**Acceptance Criteria:**
+- Source field includes: platform name, specific channel/URL, date found, referrer
+- Source effectiveness metrics are tracked (application rate, interview rate, offer rate)
+- Source information is displayed prominently on application cards
+- Source analytics dashboard shows which sources yield best results
+- Source can be filtered and searched across all applications
+
+---
+
+## Strategy 2: Network Building & Recruiter Management
+
+### US-044: Manage Recruiter Contacts
+**As a** job seeker,  
+**I want to** maintain a list of recruiters with their contact information and specializations,  
+**So that** I can build relationships and get connected to relevant opportunities.
+
+**Acceptance Criteria:**
+- Recruiter management section is available in the application
+- Each recruiter entry includes: name, email, phone, LinkedIn profile, company/agency, specialization, location focus
+- Recruiters can be added, edited, and deleted
+- Recruiters can be categorized by type (internal recruiter, agency recruiter, headhunter)
+- Recruiter list can be searched and filtered
+- Recruiter contacts are stored in localStorage
+
+---
+
+### US-045: Track Recruiter Interactions
+**As a** job seeker,  
+**I want to** log all interactions with recruiters (emails, calls, meetings),  
+**So that** I can maintain relationship history and follow up appropriately.
+
+**Acceptance Criteria:**
+- Interaction log is available for each recruiter
+- Each interaction includes: date, type (email/call/meeting/LinkedIn), summary, outcome, next steps
+- Interactions are displayed chronologically
+- Interaction history can be viewed per recruiter
+- Upcoming follow-ups are highlighted
+- Interaction reminders can be set
+
+---
+
+### US-046: Manage Hiring Manager Contacts
+**As a** job seeker,  
+**I want to** maintain a list of hiring managers and lead designers I've connected with,  
+**So that** I can build professional relationships and get direct referrals.
+
+**Acceptance Criteria:**
+- Hiring manager/designer contact section is available
+- Each contact includes: name, title, company, email, LinkedIn, department, location
+- Contacts can be categorized (hiring manager, lead designer, design director, etc.)
+- Contact list can be searched and filtered by company, role, location
+- Contacts are linked to applications when relevant
+- Contact information is stored securely
+
+---
+
+### US-047: Track Networking Activities
+**As a** job seeker,  
+**I want to** log networking activities and conversations with industry professionals,  
+**So that** I can track relationship building progress and identify warm leads.
+
+**Acceptance Criteria:**
+- Networking activity log is available
+- Each activity includes: date, contact person, type (coffee chat, LinkedIn message, event, etc.), topic discussed, outcome, follow-up needed
+- Activities can be linked to specific companies or roles
+- Networking metrics are tracked (contacts made, meetings scheduled, referrals received)
+- Activity calendar view shows upcoming networking events
+- Networking goals can be set and tracked
+
+---
+
+### US-048: AI Job Adviser - Task Management
+**As a** job seeker,  
+**I want to** receive a list of tasks and subtasks from ChatGPT as my job adviser,  
+**So that** I can have a structured action plan to achieve my job search goals.
+
+**Acceptance Criteria:**
+- AI Job Adviser section is available in the application
+- Tasks are organized by strategy (Application Strategy, Networking Strategy, LinkedIn Strategy)
+- Each task includes: title, description, priority, due date, status, subtasks
+- Tasks can be marked as complete, in progress, or pending
+- Subtasks can be checked off individually
+- Task progress is tracked and visualized
+- AI can generate new tasks based on current application status
+- Task recommendations are personalized based on profile and history
+
+---
+
+### US-049: AI Job Adviser - Personalized Guidance
+**As a** job seeker,  
+**I want to** receive personalized advice and recommendations from ChatGPT based on my application history and profile,  
+**So that** I can make data-driven decisions about my job search strategy.
+
+**Acceptance Criteria:**
+- AI adviser analyzes application history, success rates, and patterns
+- Recommendations are generated for: which jobs to apply to, how to improve cover letters, networking opportunities, LinkedIn content strategy
+- Advice is contextual and based on actual data from the application
+- AI can answer questions about job search strategy
+- Advice is updated as new data is added
+- AI suggestions can be saved and referenced later
+
+---
+
+### US-050: Recruiter Effectiveness Analytics
+**As a** job seeker,  
+**I want to** see analytics on which recruiters and networking contacts are most effective,  
+**So that** I can prioritize relationships that lead to opportunities.
+
+**Acceptance Criteria:**
+- Analytics dashboard shows recruiter effectiveness metrics
+- Metrics include: jobs referred, interviews secured, offers received, response rate
+- Networking contact effectiveness is tracked
+- Top performers are highlighted
+- Recommendations are provided for which contacts to prioritize
+- Historical trends show relationship value over time
+
+---
+
+## Strategy 3: LinkedIn Presence & Personal Branding
+
+### US-051: Plan LinkedIn Content
+**As a** job seeker,  
+**I want to** plan and track LinkedIn articles and posts I want to publish,  
+**So that** I can build my personal brand and attract companies to approach me.
+
+**Acceptance Criteria:**
+- LinkedIn content planning section is available
+- Content ideas can be added with: title, topic, target audience, draft content, publish date, status
+- Content calendar view shows planned posts and articles
+- Content can be categorized (article, post, carousel, video)
+- Content performance can be tracked (views, likes, comments, shares)
+- Content ideas can be generated based on profile and expertise
+
+---
+
+### US-052: Track LinkedIn Activity
+**As a** job seeker,  
+**I want to** log my LinkedIn activities (posts, articles, comments, connections),  
+**So that** I can maintain consistency and track my personal branding efforts.
+
+**Acceptance Criteria:**
+- LinkedIn activity log is available
+- Each activity includes: date, type (post/article/comment/connection), content summary, engagement metrics, link to post
+- Activities are displayed chronologically
+- Activity frequency and consistency are tracked
+- Engagement trends are visualized
+- Activity goals can be set (e.g., post 3 times per week)
+
+---
+
+### US-053: Manage Portfolio Content
+**As a** job seeker,  
+**I want to** plan and track portfolio content including photos of college activities and projects,  
+**So that** I can showcase my work and attract potential employers.
+
+**Acceptance Criteria:**
+- Portfolio content management section is available
+- Each portfolio item includes: title, description, type (project/activity/achievement), date, media (photos/videos), LinkedIn post link, status
+- Portfolio items can be organized by category or project
+- Portfolio items can be scheduled for LinkedIn publication
+- Portfolio content can be linked to specific job applications
+- Media files can be referenced (stored locally or in cloud)
+
+---
+
+### US-054: Track LinkedIn Profile Views
+**As a** job seeker,  
+**I want to** log when companies or recruiters view my LinkedIn profile,  
+**So that** I can identify potential opportunities and follow up with interested parties.
+
+**Acceptance Criteria:**
+- LinkedIn profile views can be manually logged
+- Each view includes: viewer name, company, title, date, source (if known), follow-up action
+- Profile views are displayed in a dedicated section
+- Views from target companies are highlighted
+- Follow-up reminders can be set for profile viewers
+- Profile view trends are tracked over time
+
+---
+
+### US-055: LinkedIn Engagement Analytics
+**As a** job seeker,  
+**I want to** see analytics on my LinkedIn content performance,  
+**So that** I can understand what content resonates and optimize my personal branding strategy.
+
+**Acceptance Criteria:**
+- Analytics dashboard shows LinkedIn engagement metrics
+- Metrics include: total views, likes, comments, shares, profile views, connection requests
+- Content performance is compared (which posts/articles perform best)
+- Audience insights are provided (who engages with content)
+- Recommendations are generated for content optimization
+- Trends show growth in engagement over time
+
+---
+
+### US-056: Content Calendar for LinkedIn
+**As a** job seeker,  
+**I want to** have a content calendar to plan my LinkedIn posts and articles,  
+**So that** I can maintain consistent presence and build my professional brand systematically.
+
+**Acceptance Criteria:**
+- Content calendar view is available (monthly/weekly views)
+- Content items can be scheduled with specific dates
+- Calendar shows planned, published, and draft content
+- Content can be rescheduled or moved
+- Reminders can be set for content publication
+- Calendar integrates with LinkedIn activity log
+
+---
+
+### US-057: Track Inbound Opportunities
+**As a** job seeker,  
+**I want to** log when companies or recruiters approach me directly through LinkedIn,  
+**So that** I can track the effectiveness of my personal branding and LinkedIn presence.
+
+**Acceptance Criteria:**
+- Inbound opportunities section is available
+- Each opportunity includes: company, recruiter/contact name, date contacted, role offered, source (LinkedIn message/profile view), status, notes
+- Inbound opportunities are linked to applications when converted
+- Opportunity source is tracked (which content led to the contact)
+- Inbound opportunity trends are analyzed
+- Success metrics show conversion from LinkedIn presence to opportunities
+
+---
+
+### US-058: AI Job Adviser - Weekly LinkedIn Tasks
+**As a** job seeker,  
+**I want to** receive a weekly list of tasks and subtasks from ChatGPT specifically for building my LinkedIn presence,  
+**So that** I can systematically work towards becoming a recognized talented product designer and attract companies to approach me.
+
+**Acceptance Criteria:**
+- AI Job Adviser provides weekly task lists specifically for LinkedIn strategy
+- Tasks are organized by week and include: content creation, engagement activities, profile optimization, networking actions
+- Each weekly task includes: title, description, priority, due date, status, subtasks
+- Tasks are personalized based on:
+  - Current LinkedIn activity level
+  - Content performance history
+  - Profile completeness
+  - Engagement goals
+  - Portfolio items available
+- Weekly tasks can include:
+  - "Write and publish 1 article about [topic]"
+  - "Post 3 times this week about [theme]"
+  - "Engage with 10 posts from target companies"
+  - "Update profile section: [section name]"
+  - "Share portfolio project: [project name]"
+  - "Connect with 5 hiring managers from [companies]"
+  - "Comment thoughtfully on 3 industry posts"
+- Tasks can be marked as complete, in progress, or pending
+- Subtasks can be checked off individually
+- Weekly task progress is tracked and visualized
+- AI generates new weekly tasks based on:
+  - Previous week's completion rate
+  - Current LinkedIn engagement metrics
+  - Upcoming portfolio items to showcase
+  - Industry trends and relevant topics
+- Task recommendations adapt to user's schedule and capacity
+- Weekly summary shows what was accomplished and what's planned for next week
+
 ---
 
 ## Summary
 
-These 37 user stories cover all major features of the Dublin Job Application Tracker:
+These 57 user stories cover all major features of the Job Application Tracker:
 
 - **Application Management (US-001 to US-004)**: Core CRUD operations
 - **Status Management (US-005 to US-006)**: Status tracking and statistics
@@ -555,7 +916,291 @@ These 37 user stories cover all major features of the Dublin Job Application Tra
 - **User Interface (US-032 to US-034)**: UX and responsive design
 - **Job URL Management (US-035)**: Link to original postings
 - **Application Workflow (US-036)**: Streamlined application process
-- **Deployment and Hosting (US-037)**: GitHub Pages deployment for production use
+- **Deployment and Hosting (US-037)**: GitHub Pages deployment for production use ✅
+- **Strategy 1: Enhanced Application Process (US-038 to US-043)**: HR contacts, rejection emails, cover letters, process logging, learning analytics, source tracking
+- **Strategy 2: Network Building (US-044 to US-050)**: Recruiter management, interaction tracking, hiring manager contacts, networking activities, AI job adviser, effectiveness analytics
+- **Strategy 3: LinkedIn Presence (US-051 to US-058)**: Content planning, activity tracking, portfolio management, profile views, engagement analytics, content calendar, inbound opportunities, AI weekly task management
+
+### Implementation Status Summary
+
+- **Total Stories**: 58
+- **Fully Implemented**: 35 (60%) - Core application tracking features
+- **Partially Implemented**: 1 (2%) - US-018 (Crawler with real API integrations)
+- **Not Implemented**: 22 (38%) - New strategy features (US-038 to US-058)
+- **Production Ready**: ✅ Yes - Core features deployed and accessible
+- **Future Enhancements**: Strategy 1, 2, and 3 features ready for implementation
+
+### Additional Enhancements Beyond User Stories
+
+The application includes many enhancements beyond the original user stories:
+- **Accessibility**: WCAG AA compliant with full screen reader support
+- **User Experience**: Toast notifications, loading states, skeleton screens, enhanced empty states
+- **Mobile Optimization**: Touch-optimized interface, mobile drawer menu, responsive design
+- **Error Handling**: Comprehensive error handling with user-friendly messages
+- **Keyboard Shortcuts**: Ctrl/Cmd+N for new application, Ctrl/Cmd+K for search, Esc to close modals
+- **Form Validation**: Real-time validation with helpful error messages
+- **Dashboard**: Overview page with recent applications and statistics
 
 Each user story follows the standard format: "As a [user type], I want [goal], so that [benefit]" and includes acceptance criteria for implementation guidance.
+
+---
+
+## Phase 1: Initial Setup & Profile Creation (Vision)
+
+### US-059: Clone and Run Project Locally
+**As a** job seeker,  
+**I want to** clone the project from GitHub and run it locally with a simple command,  
+**So that** I can use the application on my own computer without sharing my data with others.
+
+**Acceptance Criteria:**
+- Project can be cloned from GitHub repository
+- Simple command (e.g., `npm start` or `python -m http.server`) runs the application
+- Application opens in default web browser automatically
+- No complex setup or configuration required for basic usage
+- Clear instructions provided in README for local setup
+
+---
+
+### US-060: Upload LinkedIn Profile PDF
+**As a** job seeker,  
+**I want to** upload my LinkedIn profile as a PDF file,  
+**So that** the application can extract my professional information automatically.
+
+**Acceptance Criteria:**
+- Upload interface accepts PDF files
+- Clear instructions provided on how to download LinkedIn profile as PDF using standard method
+- File upload validation (file type, size limits)
+- Upload progress indicator shown to user
+- Error handling for invalid or corrupted PDF files
+- Success confirmation after upload
+
+---
+
+### US-061: Provide GPT API Key
+**As a** job seeker,  
+**I want to** securely provide my GPT API key,  
+**So that** the application can use AI services to analyze my profile and provide recommendations.
+
+**Acceptance Criteria:**
+- Secure input field for API key (masked/password type)
+- API key stored locally (localStorage or local file, not sent to external servers)
+- API key validation before saving
+- Option to update or change API key later
+- Clear information about API usage and costs
+- Support for both OpenAI API and alternative AI services (avalAI)
+
+---
+
+### US-062: Convert Resume to Markdown
+**As a** job seeker,  
+**I want to** have my uploaded LinkedIn PDF automatically converted to markdown format,  
+**So that** my profile information is stored in a structured, editable format.
+
+**Acceptance Criteria:**
+- PDF parsing extracts text content accurately
+- Markdown conversion preserves structure (headings, lists, sections)
+- Converted markdown stored in user's local project directory
+- File path clearly displayed to user
+- User can view and edit the generated markdown file
+- Conversion handles common PDF formats and layouts
+
+---
+
+### US-063: Extract Job Titles and Skills via AI
+**As a** job seeker,  
+**I want to** have AI analyze my resume and extract three recommended job titles and my skills,  
+**So that** I can understand what positions I'm qualified for and what skills I possess.
+
+**Acceptance Criteria:**
+- AI prompt sent to GPT API with resume markdown content
+- Response includes exactly three job title recommendations
+- Response includes comprehensive list of skills extracted from resume
+- Results displayed clearly to user
+- Loading state shown during AI processing
+- Error handling if API call fails
+- Results cached locally to avoid redundant API calls
+
+---
+
+### US-064: Edit and Delete Extracted Information
+**As a** job seeker,  
+**I want to** edit or delete the AI-extracted job titles and skills,  
+**So that** I can correct any mistakes and customize the information to match my preferences.
+
+**Acceptance Criteria:**
+- Each job title has edit and delete buttons
+- Each skill has edit and delete buttons
+- Edit opens inline editing or modal form
+- Changes saved immediately
+- User can add new job titles or skills manually
+- Visual feedback for all edit/delete actions
+
+---
+
+### US-065: Select Job Location and Work Type
+**As a** job seeker,  
+**I want to** select my preferred job location and work type (remote, hybrid, on-site),  
+**So that** the application can filter and match jobs according to my preferences.
+
+**Acceptance Criteria:**
+- Location dropdown or multi-select with common job locations
+- Work type selection (Remote, Hybrid, On-site, Any)
+- Selections saved with profile
+- Can be updated later
+- Used for job matching and filtering
+
+---
+
+### US-066: Complete Profile Creation
+**As a** job seeker,  
+**I want to** complete my profile setup and see a confirmation,  
+**So that** I know my profile is ready and I can proceed to the next steps.
+
+**Acceptance Criteria:**
+- Profile creation wizard or step-by-step process
+- Progress indicator shows completion status
+- Final confirmation screen when profile is complete
+- Profile data saved to local storage
+- User can return to edit profile later
+- Profile status clearly displayed in application
+
+---
+
+### US-067: Select Hiring Strategies and Effort Level
+**As a** job seeker,  
+**I want to** select which hiring strategies I want to use and my preferred effort level,  
+**So that** the application can tailor its recommendations and tasks to my preferences.
+
+**Acceptance Criteria:**
+- Strategy selection interface with multiple options:
+  - Strategy 1: Enhanced Application Process & Learning
+  - Strategy 2: Network Building & Recruiter Management
+  - Strategy 3: LinkedIn Presence & Personal Branding
+- Effort level selection (Low, Medium, High, Maximum)
+- Can select multiple strategies
+- Selections saved with profile
+- Can be updated later
+- Selections influence job recommendations and task generation
+
+---
+
+### US-068: View Suggested Jobs from Internet
+**As a** job seeker,  
+**I want to** see a list of job positions found from the internet that match my profile,  
+**So that** I can discover opportunities I might have missed.
+
+**Acceptance Criteria:**
+- Jobs fetched from multiple online sources
+- Jobs filtered based on profile (location, skills, job titles, work type)
+- Job list displays: Title, Company, Location, Post Date, Description, Source
+- Jobs sorted by relevance or date
+- "Update Jobs" button to fetch latest opportunities
+- Loading state during job fetching
+- Error handling if job fetching fails
+
+---
+
+### US-069: Apply to Jobs and Log Activities
+**As a** job seeker,  
+**I want to** mark jobs as applied and log my application activities,  
+**So that** I can track my job search progress and maintain a record of all applications.
+
+**Acceptance Criteria:**
+- "Apply" button on each suggested job
+- Clicking "Apply" adds job to applications list
+- Activity log entry created automatically
+- User can add manual log entries for other activities
+- Log entries include: Date, Activity Type, Description, Outcome
+- Log entries displayed in chronological order
+- Can edit or delete log entries
+
+---
+
+### US-070: Get Job Match Score (Optional)
+**As a** job seeker,  
+**I want to** see a match score for a job based on the job description,  
+**So that** I can prioritize which jobs to apply to first.
+
+**Acceptance Criteria:**
+- "Get Match Score" button on job cards (optional feature)
+- Warning message displayed that this feature uses GPT API credits
+- API credit balance checked before processing
+- If insufficient credits, user is notified and feature disabled
+- Job description sent to GPT API for analysis
+- Match score returned (e.g., 1-10 or percentage)
+- Score explanation provided (why this score, what matches, what doesn't)
+- Score displayed prominently on job card
+- Credit usage clearly indicated
+
+---
+
+### US-071: Receive AI Recommendations Based on Activities
+**As a** job seeker,  
+**I want to** receive personalized recommendations from AI based on my application activities,  
+**So that** I can improve my job search strategy and increase my success rate.
+
+**Acceptance Criteria:**
+- "Get Recommendations" feature available
+- AI analyzes user's application history, activities, and profile
+- Recommendations include:
+  - What to do next
+  - Which jobs to prioritize
+  - How to improve applications
+  - Skills to highlight
+  - Networking suggestions
+- Recommendations displayed in clear, actionable format
+- Can request new recommendations at any time
+- Recommendations saved for reference
+
+---
+
+### US-072: View Remaining API Credits
+**As a** job seeker,  
+**I want to** see my remaining API credits (GPT or avalAI) in a floating box,  
+**So that** I know how many credits I have left before making API calls.
+
+**Acceptance Criteria:**
+- Floating box/widget displays current credit balance
+- Updates automatically after each API call
+- Shows credit balance for both GPT and avalAI (if configured)
+- Visible but not intrusive (can be minimized)
+- Clicking box shows detailed credit information
+- Warning when credits are low (e.g., < 20%)
+- Error message if unable to fetch credit balance
+- Credit balance checked periodically or on-demand
+
+---
+
+## Summary - Phase 1 Vision
+
+These 14 new user stories (US-059 to US-072) define the Phase 1 vision for the Job Application Tracker:
+
+**Setup & Profile Creation:**
+- Local installation and setup (US-059)
+- LinkedIn PDF upload (US-060)
+- API key configuration (US-061)
+- Resume to markdown conversion (US-062)
+- AI-powered profile extraction (US-063)
+- Profile editing capabilities (US-064)
+- Location and work type selection (US-065)
+- Profile completion (US-066)
+
+**Strategy Selection:**
+- Hiring strategy and effort level selection (US-067)
+
+**Job Discovery & Application:**
+- View suggested jobs from internet (US-068)
+- Apply and log activities (US-069)
+- Optional job match scoring (US-070)
+
+**AI Features:**
+- Personalized recommendations (US-071)
+- API credit monitoring (US-072)
+
+**Implementation Priority:**
+- **High Priority**: US-059, US-060, US-061, US-062, US-063, US-064, US-065, US-066, US-067, US-068, US-069
+- **Medium Priority**: US-071, US-072
+- **Low Priority** (Optional): US-070
+
+**Total User Stories**: 72 (58 existing + 14 new Phase 1 vision stories)
 

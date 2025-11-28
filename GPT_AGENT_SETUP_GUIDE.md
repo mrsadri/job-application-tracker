@@ -280,6 +280,37 @@ Format your response in a friendly, actionable way.
 
 ---
 
+### 1.6 Create `strategy-3-weekly-tasks-prompt.md`
+
+This prompt helps you get weekly tasks for building your LinkedIn presence and personal brand (Strategy 3):
+
+```markdown
+# Strategy 3: LinkedIn Presence & Personal Branding - Weekly Tasks Prompt
+
+You are my LinkedIn strategy coach helping me build a strong professional presence.
+
+## My Profile
+[Paste my-profile.json contents here]
+
+## Strategy 3: LinkedIn Presence & Personal Branding
+
+Please provide me with a comprehensive list of weekly tasks to achieve my LinkedIn presence goals.
+
+Tasks should cover:
+- Content Creation & Planning
+- Profile Optimization
+- Networking & Engagement
+- Portfolio & Showcase
+- Analytics & Tracking
+- Inbound Opportunity Management
+
+Format tasks by day with priorities, time estimates, and clear action steps.
+```
+
+**Action**: Use this prompt weekly to get a structured list of tasks for building your LinkedIn presence.
+
+---
+
 ## Step 2: Set Up ChatGPT Custom Instructions
 
 ### Option A: Using ChatGPT (Web/App)
@@ -353,6 +384,23 @@ If you want to automate this, you can create a script that:
    - If GPT suggests new strategies, add them to `application-strategies.md`
    - Note which strategies you're testing
    - Track what works
+
+### Weekly Routine (30 minutes) - Strategy 3: LinkedIn Presence
+
+1. **Get Weekly LinkedIn Tasks**
+   - Open ChatGPT
+   - Copy the prompt from `strategy-3-weekly-tasks-prompt.md`
+   - Fill in your current LinkedIn status and any updates
+   - Paste and send
+   - Review the weekly task list
+   - Schedule tasks throughout the week
+   - Track progress as you complete tasks
+
+2. **Review LinkedIn Performance**
+   - Check profile views
+   - Review engagement on your posts
+   - Note any inbound messages or opportunities
+   - Update your LinkedIn activity log
 
 ---
 
@@ -508,6 +556,7 @@ applyJob/
 ├── application-history.json (CREATE THIS)
 ├── job-search-prompt.md (CREATE THIS)
 ├── daily-advice-prompt.md (CREATE THIS)
+├── strategy-3-weekly-tasks-prompt.md (CREATE THIS - for LinkedIn presence weekly tasks)
 └── daily-job-search.js (OPTIONAL - for automation)
 ```
 
@@ -520,6 +569,7 @@ applyJob/
 - [ ] Create `application-history.json` (initialize with current stats)
 - [ ] Create `job-search-prompt.md`
 - [ ] Create `daily-advice-prompt.md`
+- [ ] Create `strategy-3-weekly-tasks-prompt.md` (for LinkedIn presence weekly tasks)
 - [ ] Set up ChatGPT Custom Instructions
 - [ ] Test the job search prompt once
 - [ ] Test the daily advice prompt once

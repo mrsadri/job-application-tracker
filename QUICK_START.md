@@ -41,6 +41,16 @@
 4. Paste into ChatGPT
 5. Read the advice and plan tomorrow
 
+## Weekly Routine (30 minutes) - LinkedIn Presence (Strategy 3)
+
+1. Open `strategy-3-weekly-tasks-prompt.md`
+2. Copy the prompt
+3. Fill in your current LinkedIn status (connections, recent posts, profile views, etc.)
+4. Paste into ChatGPT
+5. Review the weekly task list provided
+6. Schedule tasks throughout the week
+7. Track your progress as you complete tasks
+
 ## Files You Need
 
 - ✅ `my-profile.json` - Your skills and background
@@ -48,6 +58,7 @@
 - ✅ `application-history.json` - Your statistics
 - ✅ `job-search-prompt.md` - Daily job search prompt
 - ✅ `daily-advice-prompt.md` - Daily advice prompt
+- ✅ `strategy-3-weekly-tasks-prompt.md` - Weekly LinkedIn presence tasks (Strategy 3)
 
 ## Important Notes
 

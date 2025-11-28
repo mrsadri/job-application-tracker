@@ -4,6 +4,7 @@ import { crawlIndeed } from './sources/indeed.js';
 import { crawlLinkedIn } from './sources/linkedin.js';
 import { crawlReed } from './sources/reed.js';
 import { crawlTelegram } from './sources/telegram.js';
+import { crawlJaabz } from './sources/jaabz.js';
 import { filterJobsByProfile, deduplicateJobs } from './utils/jobFilter.js';
 import { config, defaultProfile } from './config.js';
 
@@ -20,7 +21,8 @@ export class JobCrawler {
             { name: 'Indeed', enabled: true, crawl: crawlIndeed },
             { name: 'LinkedIn', enabled: !!config.apiKeys.serpapi.apiKey, crawl: crawlLinkedIn },
             { name: 'Reed', enabled: !!config.apiKeys.reed.apiKey, crawl: crawlReed },
-            { name: 'Telegram', enabled: true, crawl: crawlTelegram } // Enabled by default, but requires setup
+            { name: 'Telegram', enabled: true, crawl: crawlTelegram }, // Enabled by default, but requires setup
+            { name: 'Jaabz', enabled: true, crawl: crawlJaabz } // Enabled by default - visa sponsorship jobs
         ];
     }
 

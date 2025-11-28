@@ -7,6 +7,38 @@ A modern, feature-rich web application to help you organize and track your job a
 
 ## ✨ Features
 
+### Three Strategic Approaches
+
+The Job Application Tracker is built around three complementary job search strategies:
+
+#### 🎯 Strategy 1: Enhanced Application Process & Learning
+- **HR Contact Management**: Store and track HR email addresses and contact information
+- **Rejection Email Analysis**: Log and analyze rejection emails to identify patterns
+- **Cover Letter Management**: Store, version, and reuse effective cover letters
+- **Process Logging**: Detailed step-by-step tracking of each application journey
+- **Learning Analytics**: Data-driven insights to improve application success rates
+- **Source Effectiveness Tracking**: Identify which job sources yield best results
+
+#### 🤝 Strategy 2: Network Building & Recruiter Management
+- **Recruiter Database**: Comprehensive contact management for recruiters and agencies
+- **Interaction Tracking**: Log all communications with recruiters and hiring managers
+- **Hiring Manager Contacts**: Build and maintain relationships with decision-makers
+- **Networking Activity Log**: Track coffee chats, events, and professional connections
+- **AI Job Adviser**: ChatGPT-powered task management and personalized guidance
+- **Relationship Analytics**: Identify most effective contacts and prioritize relationships
+
+#### 📱 Strategy 3: LinkedIn Presence & Personal Branding
+- **Content Planning**: Plan and schedule LinkedIn articles and posts
+- **Activity Tracking**: Log all LinkedIn activities with engagement metrics
+- **Portfolio Management**: Showcase college activities, projects, and achievements
+- **Profile View Tracking**: Monitor who views your profile and follow up
+- **Engagement Analytics**: Understand what content resonates with your audience
+- **Content Calendar**: Maintain consistent presence with scheduled content
+- **Inbound Opportunity Tracking**: Log when companies approach you directly
+- **AI Weekly Task Management**: ChatGPT-powered weekly task lists for LinkedIn presence building
+
+> **Note**: Strategy features (US-038 to US-057) are defined and ready for implementation. See [STRATEGIES_IMPLEMENTATION_PLAN.md](./STRATEGIES_IMPLEMENTATION_PLAN.md) for detailed implementation roadmap.
+
 ### Frontend Application
 - ✅ **Track Applications**: Add, edit, and delete job applications with detailed information
 - 📊 **Statistics Dashboard**: Real-time stats showing your application progress
@@ -17,13 +49,19 @@ A modern, feature-rich web application to help you organize and track your job a
 - ♿ **Accessible**: WCAG AA compliant with screen reader support
 - 🎨 **Modern UI**: Beautiful interface with smooth animations
 
-### Job Crawler Service
-- 🔍 **Multi-source Aggregation**: Searches Adzuna, Indeed, LinkedIn, and Reed
+### Job Discovery
+- 🔍 **Multi-source Aggregation**: Integrates with Remotive, Arbeitnow, GitHub Jobs, and more
 - 🎯 **Smart Filtering**: Only shows jobs matching your profile preferences
 - 🔄 **Auto-deduplication**: Removes duplicate job postings
 - 📅 **Recent Jobs**: Filters to jobs posted in the last 2 weeks
+- 📊 **Relevance Scoring**: Jobs scored based on your profile (roles, skills, locations)
+- 🚀 **Real-time Fetching**: Click "Update Jobs" to fetch latest opportunities
+
+### Backend Crawler Service (Optional)
+- 🔍 **Enhanced Sources**: Backend crawler supports Adzuna, Indeed, LinkedIn (via SerpAPI), and Reed
 - 🤖 **Respectful Crawling**: Follows robots.txt and implements rate limiting
 - 🚀 **RESTful API**: Easy integration with the frontend
+- 📦 **Deployable**: Can be deployed to Railway, Heroku, Vercel, or similar platforms
 
 ## 🚀 Quick Start
 
@@ -48,7 +86,7 @@ A modern, feature-rich web application to help you organize and track your job a
 
 3. **Visit** `http://localhost:8080`
 
-That's it! The app works without any backend. Job suggestions will use demo data.
+That's it! The app works without any backend. Job suggestions fetch real jobs from free public APIs (Remotive, Arbeitnow, GitHub Jobs).
 
 ### Option 2: With Job Crawler (Full Features)
 
@@ -213,7 +251,11 @@ Every application tracks:
 - Touch-optimized buttons (44px minimum touch target)
 - Swipe-friendly interface
 
-## 🌐 Deployment
+## 🌐 Deployment Status
+
+✅ **Live Application**: https://mrsadri.github.io/job-application-tracker/
+
+The application is successfully deployed to GitHub Pages and fully functional in production.
 
 ### Deploy to GitHub Pages (Frontend)
 
@@ -234,6 +276,8 @@ Every application tracks:
    - Click Save
 
 3. **Access your site** at `https://yourusername.github.io/job-application-tracker`
+
+**Note**: The application is already deployed and accessible at the live URL above.
 
 ### Deploy Crawler Service
 
@@ -279,7 +323,11 @@ window.CRAWLER_API_URL = 'https://your-crawler-api.com/api/crawl';
 - **[crawler/README.md](crawler/README.md)** - Crawler API documentation
 - **[GPT_AGENT_SETUP_GUIDE.md](GPT_AGENT_SETUP_GUIDE.md)** - AI assistant setup
 - **[ACCESSIBILITY_IMPROVEMENTS.md](ACCESSIBILITY_IMPROVEMENTS.md)** - Accessibility features
-- **[USER_STORIES.md](USER_STORIES.md)** - User stories and use cases
+- **[USER_STORIES.md](USER_STORIES.md)** - User stories and use cases (72 stories including Phase 1 vision and 3 strategic approaches)
+- **[PROJECT_BRIEF.md](PROJECT_BRIEF.md)** - Complete project brief with Phase 1 vision, architecture, and success criteria
+- **[STRATEGIES_IMPLEMENTATION_PLAN.md](STRATEGIES_IMPLEMENTATION_PLAN.md)** - Detailed implementation plan for Strategy 1, 2, and 3 features
+- **[PROJECT_SUMMARY.md](PROJECT_SUMMARY.md)** - Comprehensive project overview and status
+- **[IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md)** - Current implementation status of all features
 
 ## 🛠️ Technology Stack
 

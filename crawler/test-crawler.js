@@ -1,17 +1,12 @@
 // Simple test script for the crawler
 import { JobCrawler } from './crawler.js';
 import { readFileSync } from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import { PROFILE_PATHS } from './paths.config.js';
 
 // Load profile
 let profile;
 try {
-    const profilePath = join(__dirname, '..', 'my-profile.json');
-    const profileData = readFileSync(profilePath, 'utf-8');
+    const profileData = readFileSync(PROFILE_PATHS.PROFILE, 'utf-8');
     profile = JSON.parse(profileData);
     console.log('Loaded profile from my-profile.json');
 } catch (error) {

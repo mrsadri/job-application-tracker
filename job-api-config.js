@@ -44,10 +44,10 @@ const JobAPIConfig = {
     // Set this to your crawler service URL when deployed
     crawler: {
         enabled: true,
-        baseUrl: window.CRAWLER_API_URL || 'http://localhost:3000/api',
+        baseUrl: (window.PATHS && window.PATHS.API && window.PATHS.API.CRAWLER_BASE) || window.CRAWLER_API_URL || 'http://localhost:3000/api',
         endpoints: {
-            crawl: '/crawl',
-            status: '/status'
+            crawl: (window.PATHS && window.PATHS.API && window.PATHS.API.CRAWLER_ENDPOINTS && window.PATHS.API.CRAWLER_ENDPOINTS.CRAWL) || '/crawl',
+            status: (window.PATHS && window.PATHS.API && window.PATHS.API.CRAWLER_ENDPOINTS && window.PATHS.API.CRAWLER_ENDPOINTS.STATUS) || '/status'
         }
     }
 };

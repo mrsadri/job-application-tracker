@@ -24,7 +24,7 @@ export const config = {
         respectRobotsTxt: process.env.RESPECT_ROBOTS_TXT !== 'false'
     },
     cors: {
-        origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:8080']
+        origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:8080', 'http://localhost:8088', 'http://localhost:5500', 'http://127.0.0.1:5500']
     },
     logging: {
         level: process.env.LOG_LEVEL || 'info'

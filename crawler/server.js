@@ -4,11 +4,7 @@ import cors from 'cors';
 import { config } from './config.js';
 import { JobCrawler } from './crawler.js';
 import { readFileSync } from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import { PROFILE_PATHS } from './paths.config.js';
 
 const app = express();
 
@@ -22,8 +18,7 @@ app.use(express.json());
 // Load user profile
 function loadProfile() {
     try {
-        const profilePath = join(__dirname, '..', 'my-profile.json');
-        const profileData = readFileSync(profilePath, 'utf-8');
+        const profileData = readFileSync(PROFILE_PATHS.PROFILE, 'utf-8');
         return JSON.parse(profileData);
     } catch (error) {
         console.warn('Could not load profile, using defaults:', error.message);
@@ -45,7 +40,8 @@ app.get('/api/status', (req, res) => {
             adzuna: !!config.apiKeys.adzuna.appId,
             indeed: true,
             linkedin: !!config.apiKeys.serpapi.apiKey,
-            reed: !!config.apiKeys.reed.apiKey
+            reed: !!config.apiKeys.reed.apiKey,
+            jaabz: true
         }
     });
 });
@@ -99,6 +95,17 @@ app.post('/api/crawl/:source', async (req, res) => {
                 success: true,
                 jobs: jobs,
                 source: 'Telegram',
+                timestamp: new Date().toISOString()
+            });
+        }
+        
+        if (source.toLowerCase() === 'jaabz') {
+            const { crawlJaabz } = await import('./sources/jaabz.js');
+            const jobs = await crawlJaabz(profile);
+            return res.json({
+                success: true,
+                jobs: jobs,
+                source: 'Jaabz',
                 timestamp: new Date().toISOString()
             });
         }
