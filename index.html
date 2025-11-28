@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Dublin Job Application Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Skip Link for Accessibility -->
+    <nav aria-label="Skip navigation">
+        <a href="#main-content" class="skip-link">Skip to main content</a>
+    </nav>
+    
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container" role="status" aria-live="polite" aria-atomic="true"></div>
+    
+    <!-- Status Announcements for Screen Readers -->
+    <div id="status-announcements" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+    
+    <div class="container">
+        <header>
+            <h1>🇮🇪 Dublin Job Application Tracker</h1>
+            <p class="subtitle">Organize your job search for immigration to Dublin</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Mobile Menu Button -->
+            <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Open navigation menu" aria-expanded="false">
+                <span aria-hidden="true">☰</span>
+            </button>
+            
+            <!-- Sidebar Overlay for Mobile -->
+            <div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
+            
+            <div class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
+                <div class="sidebar-section collapsible" data-collapsible="stats">
+                    <button class="section-header" aria-expanded="true" aria-controls="stats-content" type="button">
+                        <h3>Application Statistics</h3>
+                        <span class="collapse-icon" aria-hidden="true">▼</span>
+                    </button>
+                    <div id="stats-content" class="section-content">
+                        <div class="stat-item highlight">
+                            <span class="stat-label">Total Applications:</span>
+                            <span class="stat-value" id="total-apps" aria-label="Total applications">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Pending:</span>
+                            <span class="stat-value" id="pending-apps" aria-label="Pending applications">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Interviews:</span>
+                            <span class="stat-value" id="interview-apps" aria-label="Interview applications">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Rejected:</span>
+                            <span class="stat-value" id="rejected-apps" aria-label="Rejected applications">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Accepted:</span>
+                            <span class="stat-value" id="accepted-apps" aria-label="Accepted applications">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-section collapsible" data-collapsible="filters">
+                    <button class="section-header" aria-expanded="true" aria-controls="filters-content" type="button">
+                        <h3>Filter Applications</h3>
+                        <span class="collapse-icon" aria-hidden="true">▼</span>
+                    </button>
+                    <div id="filters-content" class="section-content">
+                        <div class="form-group">
+                            <label for="search-input" class="sr-only">Search applications</label>
+                            <input type="text" id="search-input" placeholder="Search by company or position..." 
+                                   class="search-input" aria-label="Search applications">
+                        </div>
+                        <div class="form-group">
+                            <label for="status-filter" class="sr-only">Filter by status</label>
+                            <select id="status-filter" class="filter-select" aria-label="Filter by status">
+                                <option value="all">All Statuses</option>
+                                <option value="applied">Applied</option>
+                                <option value="interview">Interview</option>
+                                <option value="rejected">Rejected</option>
+                                <option value="accepted">Accepted</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="source-filter" class="sr-only">Filter by source</label>
+                            <select id="source-filter" class="filter-select" aria-label="Filter by job source">
+                                <option value="all">All Sources</option>
+                                <option value="Telegram - @jobs_finding">Telegram - @jobs_finding</option>
+                                <option value="Telegram - @jaabz_com">Telegram - @jaabz_com</option>
+                                <option value="Telegram - @get_joboffer">Telegram - @get_joboffer</option>
+                                <option value="Telegram - @theyobby">Telegram - @theyobby</option>
+                                <option value="Telegram - @netherlandsjobs">Telegram - @netherlandsjobs</option>
+                                <option value="Telegram">All Telegram Channels</option>
+                                <option value="LinkedIn">LinkedIn</option>
+                                <option value="Indeed">Indeed</option>
+                                <option value="Company Website">Company Website</option>
+                                <option value="Referral">Referral</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-section collapsible" data-collapsible="sort">
+                    <button class="section-header" aria-expanded="true" aria-controls="sort-content" type="button">
+                        <h3>Sort Applications</h3>
+                        <span class="collapse-icon" aria-hidden="true">▼</span>
+                    </button>
+                    <div id="sort-content" class="section-content">
+                        <div class="form-group">
+                            <label for="sort-by" class="sr-only">Sort applications</label>
+                            <select id="sort-by" class="filter-select" aria-label="Sort applications">
+                                <option value="none">No Sorting</option>
+                                <option value="application-date-desc">Application Date (Newest First)</option>
+                                <option value="application-date-asc">Application Date (Oldest First)</option>
+                                <option value="status-update-desc">Status Update Date (Recent First)</option>
+                                <option value="status-update-asc">Status Update Date (Oldest First)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-section collapsible" data-collapsible="sources">
+                    <button class="section-header" aria-expanded="true" aria-controls="sources-content" type="button">
+                        <h3><span aria-hidden="true">📱</span> Job Sources</h3>
+                        <span class="collapse-icon" aria-hidden="true">▼</span>
+                    </button>
+                    <div id="sources-content" class="section-content">
+                        <p class="sources-description">Browse these Telegram channels for job opportunities:</p>
+                        <div class="telegram-channels">
+                            <a href="https://t.me/jobs_finding" target="_blank" rel="noopener noreferrer" 
+                               class="telegram-channel-link" data-channel="jobs_finding"
+                               aria-label="Open Telegram channel @jobs_finding in new tab">
+                                <span class="channel-icon" aria-hidden="true">📢</span>
+                                <span class="channel-name">@jobs_finding</span>
+                                <span class="channel-arrow" aria-hidden="true">→</span>
+                            </a>
+                            <a href="https://t.me/jaabz_com" target="_blank" rel="noopener noreferrer" 
+                               class="telegram-channel-link" data-channel="jaabz_com"
+                               aria-label="Open Telegram channel @jaabz_com in new tab">
+                                <span class="channel-icon" aria-hidden="true">💼</span>
+                                <span class="channel-name">@jaabz_com</span>
+                                <span class="channel-arrow" aria-hidden="true">→</span>
+                            </a>
+                            <a href="https://t.me/get_joboffer" target="_blank" rel="noopener noreferrer" 
+                               class="telegram-channel-link" data-channel="get_joboffer"
+                               aria-label="Open Telegram channel @get_joboffer in new tab">
+                                <span class="channel-icon" aria-hidden="true">🎯</span>
+                                <span class="channel-name">@get_joboffer</span>
+                                <span class="channel-arrow" aria-hidden="true">→</span>
+                            </a>
+                            <a href="https://t.me/theyobby" target="_blank" rel="noopener noreferrer" 
+                               class="telegram-channel-link" data-channel="theyobby"
+                               aria-label="Open Telegram channel @theyobby in new tab">
+                                <span class="channel-icon" aria-hidden="true">🚀</span>
+                                <span class="channel-name">@theyobby</span>
+                                <span class="channel-arrow" aria-hidden="true">→</span>
+                            </a>
+                            <a href="https://t.me/netherlandsjobs" target="_blank" rel="noopener noreferrer" 
+                               class="telegram-channel-link" data-channel="netherlandsjobs"
+                               aria-label="Open Telegram channel @netherlandsjobs in new tab">
+                                <span class="channel-icon" aria-hidden="true">🇳🇱</span>
+                                <span class="channel-name">@netherlandsjobs</span>
+                                <span class="channel-arrow" aria-hidden="true">→</span>
+                            </a>
+                        </div>
+                        <button class="btn btn-secondary btn-small" id="add-from-telegram-btn" style="width: 100%; margin-top: 10px;"
+                                aria-label="Add job from Telegram">
+                            + Add Job from Telegram
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-area" id="main-content" role="main">
+                <div class="action-bar">
+                    <button class="btn btn-primary" id="add-job-btn" 
+                            aria-label="Add new application. Keyboard shortcut: Control or Command plus N"
+                            data-tooltip="Add a new job application (Ctrl/Cmd + N)">
+                        + Add New Application
+                    </button>
+                </div>
+
+                <!-- Suggested Jobs Section -->
+                <div class="suggested-jobs-section">
+                    <div class="section-header">
+                        <h2><span aria-hidden="true">💡</span> Suggested Job Positions</h2>
+                        <button class="btn btn-secondary btn-small" id="refresh-jobs-btn"
+                                aria-label="Refresh suggested jobs">
+                            <span aria-hidden="true">🔄</span> Update Jobs
+                        </button>
+                    </div>
+                    <p class="section-description">
+                        Jobs matching your profile preferences (posted in the last 2 weeks)
+                    </p>
+                    <div id="suggested-jobs-list" class="suggested-jobs-list">
+                        <!-- Suggested jobs will be dynamically inserted here -->
+                    </div>
+                    <div id="suggested-jobs-pagination" class="pagination-container" style="display: none;">
+                        <!-- Pagination controls will be inserted here -->
+                    </div>
+                    <div id="suggested-jobs-loading" class="loading-state" style="display: none;">
+                        <p>🔍 Searching for jobs...</p>
+                    </div>
+                    <div id="suggested-jobs-empty" class="empty-state" style="display: none;" role="status">
+                        <div class="empty-state-icon" aria-hidden="true">📋</div>
+                        <h3>No suggested jobs found</h3>
+                        <p>Click "Update Jobs" to search for new opportunities!</p>
+                        <button class="btn btn-primary" onclick="document.getElementById('refresh-jobs-btn').click()">
+                            Search for Jobs
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Divider -->
+                <div class="section-divider">
+                    <h2>📋 My Applications</h2>
+                </div>
+
+                <div id="applications-list" class="applications-list">
+                    <!-- Applications will be dynamically inserted here -->
+                </div>
+                <div id="applications-pagination" class="pagination-container" style="display: none;">
+                    <!-- Pagination controls will be inserted here -->
+                </div>
+
+                <div id="empty-state" class="empty-state" role="status">
+                    <div class="empty-state-icon" aria-hidden="true">📋</div>
+                    <h3>Start Your Job Search Journey</h3>
+                    <p>Track your applications and stay organized throughout your job search.</p>
+                    <button class="btn btn-primary btn-large" id="empty-state-add-btn"
+                            aria-label="Add your first application">
+                        Add Your First Application
+                    </button>
+                    <div class="empty-state-tips" style="margin-top: 30px; text-align: left; max-width: 500px; margin-left: auto; margin-right: auto;">
+                        <h4>Quick Tips:</h4>
+                        <ul style="list-style-position: inside; text-align: left;">
+                            <li>Add applications as soon as you apply</li>
+                            <li>Update status regularly to track progress</li>
+                            <li>Use notes to remember important details</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Filtered Empty State -->
+                <div id="filtered-empty" class="empty-state filtered-empty" style="display: none;" role="status">
+                    <div class="empty-state-icon" aria-hidden="true">🔍</div>
+                    <h3>No applications match your filters</h3>
+                    <p>Try adjusting your search terms or filters to see more results.</p>
+                    <button class="btn btn-secondary" id="clear-filters-btn">
+                        Clear All Filters
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title" style="display: none;">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2 id="delete-modal-title">Delete Application</h2>
+                <button class="close-btn" id="close-delete-modal" aria-label="Close delete confirmation">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="delete-message">Are you sure you want to delete this application? This action cannot be undone.</p>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="cancel-delete-btn">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirm-delete-btn">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for adding/editing applications -->
+    <div id="job-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-description" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Add New Job Application</h2>
+                <button class="close-btn" id="close-modal" aria-label="Close dialog" type="button">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <p id="modal-description" class="sr-only">Fill out the form below to add or edit a job application</p>
+            <form id="job-form" novalidate>
+                <div class="form-group">
+                    <label for="company-name">
+                        Company Name
+                        <span class="required-indicator" aria-label="required">*</span>
+                    </label>
+                    <input type="text" id="company-name" name="company-name" required
+                           aria-required="true"
+                           aria-describedby="company-name-error company-name-help"
+                           aria-invalid="false">
+                    <span id="company-name-help" class="help-text">
+                        Enter the full company name as it appears on their website
+                    </span>
+                    <span id="company-name-error" class="error-message" role="alert" aria-live="polite"></span>
+                </div>
+                <div class="form-group">
+                    <label for="position">
+                        Position/Job Title
+                        <span class="required-indicator" aria-label="required">*</span>
+                    </label>
+                    <input type="text" id="position" name="position" required
+                           aria-required="true"
+                           aria-describedby="position-error"
+                           aria-invalid="false">
+                    <span id="position-error" class="error-message" role="alert" aria-live="polite"></span>
+                </div>
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <select id="location" name="location" aria-describedby="location-help">
+                        <option value="Dublin, Ireland" selected>Dublin, Ireland</option>
+                        <option value="Amsterdam, Netherlands">Amsterdam, Netherlands</option>
+                        <option value="Eindhoven, Netherlands">Eindhoven, Netherlands</option>
+                        <option value="Rotterdam, Netherlands">Rotterdam, Netherlands</option>
+                        <option value="Utrecht, Netherlands">Utrecht, Netherlands</option>
+                        <option value="Cork, Ireland">Cork, Ireland</option>
+                        <option value="Leeds, England">Leeds, England</option>
+                        <option value="Other">Other (specify in notes)</option>
+                    </select>
+                    <span id="location-help" class="help-text sr-only">Select the job location</span>
+                </div>
+                <div class="form-group">
+                    <label for="job-url">Job Posting URL</label>
+                    <input type="url" id="job-url" name="job-url" placeholder="https://..."
+                           inputmode="url"
+                           autocomplete="url"
+                           aria-describedby="job-url-error job-url-help"
+                           aria-invalid="false">
+                    <span id="job-url-help" class="help-text">Paste the full URL to the job posting</span>
+                    <span id="job-url-error" class="error-message" role="alert" aria-live="polite"></span>
+                </div>
+                <div class="form-group">
+                    <label for="application-date">
+                        Application Date
+                        <span class="required-indicator" aria-label="required">*</span>
+                    </label>
+                    <input type="date" id="application-date" name="application-date" required
+                           inputmode="none"
+                           aria-required="true"
+                           aria-describedby="application-date-error"
+                           aria-invalid="false">
+                    <span id="application-date-error" class="error-message" role="alert" aria-live="polite"></span>
+                </div>
+                <div class="form-group">
+                    <label for="status">
+                        Status
+                        <span class="required-indicator" aria-label="required">*</span>
+                    </label>
+                    <select id="status" name="status" required
+                            aria-required="true"
+                            aria-describedby="status-error"
+                            aria-invalid="false">
+                        <option value="applied">Applied</option>
+                        <option value="interview">Interview</option>
+                        <option value="rejected">Rejected</option>
+                        <option value="accepted">Accepted</option>
+                    </select>
+                    <span id="status-error" class="error-message" role="alert" aria-live="polite"></span>
+                </div>
+                <div class="form-group">
+                    <label for="notes">Notes</label>
+                    <textarea id="notes" name="notes" rows="4" 
+                              placeholder="Add any notes about this application..."
+                              aria-describedby="notes-help"></textarea>
+                    <span id="notes-help" class="help-text">Optional: Add any important details or reminders</span>
+                </div>
+                <div class="form-group">
+                    <label for="contact-person">Contact Person</label>
+                    <input type="text" id="contact-person" name="contact-person" 
+                           placeholder="Recruiter/HR name"
+                           aria-describedby="contact-person-help">
+                    <span id="contact-person-help" class="help-text sr-only">Name of the recruiter or HR contact</span>
+                </div>
+                <div class="form-group">
+                    <label for="contact-email">Contact Email</label>
+                    <input type="email" id="contact-email" name="contact-email" 
+                           placeholder="email@company.com"
+                           inputmode="email"
+                           autocomplete="email"
+                           aria-describedby="contact-email-error contact-email-help"
+                           aria-invalid="false">
+                    <span id="contact-email-help" class="help-text sr-only">Email address of the contact person</span>
+                    <span id="contact-email-error" class="error-message" role="alert" aria-live="polite"></span>
+                </div>
+                <div class="form-group">
+                    <label for="job-source">Source</label>
+                    <select id="job-source" name="job-source" aria-describedby="job-source-help">
+                        <option value="">Select source...</option>
+                        <option value="Telegram - @jobs_finding">Telegram - @jobs_finding</option>
+                        <option value="Telegram - @jaabz_com">Telegram - @jaabz_com</option>
+                        <option value="Telegram - @get_joboffer">Telegram - @get_joboffer</option>
+                        <option value="Telegram - @theyobby">Telegram - @theyobby</option>
+                        <option value="Telegram - @netherlandsjobs">Telegram - @netherlandsjobs</option>
+                        <option value="LinkedIn">LinkedIn</option>
+                        <option value="Indeed">Indeed</option>
+                        <option value="Company Website">Company Website</option>
+                        <option value="Referral">Referral</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <span id="job-source-help" class="help-text sr-only">Select where you found this job posting</span>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-btn" aria-label="Cancel and close form">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="submit-btn" aria-label="Save application">
+                        <span class="submit-text">Save Application</span>
+                        <span class="submit-spinner" style="display: none;" aria-hidden="true">
+                            <span class="spinner"></span> Saving...
+                        </span>
+                    </button>
+                </div>
+                <input type="hidden" id="job-id">
+            </form>
+        </div>
+    </div>
+
+    <script src="job-api-config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

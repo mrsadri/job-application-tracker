@@ -1,0 +1,35 @@
+{
+  "name": "Your Name",
+  "location": "Your Current Location",
+  "portfolio_url": "https://yourportfolio.com",
+  "target_locations": [
+    "Dublin, Ireland",
+    "Amsterdam, Netherlands"
+  ],
+  "skills": [
+    "Product Design",
+    "User Experience Design",
+    "JavaScript",
+    "Python"
+  ],
+  "experience_years": 5,
+  "education": "Your degree and university",
+  "languages": ["English"],
+  "work_authorization": "Your visa/work authorization status",
+  "preferred_roles": [
+    "Product Designer",
+    "UX Designer",
+    "Software Engineer"
+  ],
+  "industries": [
+    "Technology",
+    "FinTech"
+  ],
+  "salary_expectations": {
+    "Dublin, Ireland": "€60,000 - €80,000"
+  },
+  "remote_preference": "Remote / Hybrid / On-site",
+  "availability": "Immediate",
+  "notes": "Your professional summary and key achievements"
+}
+
