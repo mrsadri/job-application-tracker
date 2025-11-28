@@ -1213,26 +1213,54 @@ class JobTracker {
             // For now, we'll use a mock approach that can be easily connected to real APIs
             const jobs = await this.searchJobsFromAPI(locations, roles, skills, dateFrom);
 
-            // Filter jobs to only include those from the last 2 weeks
+            // Filter jobs to only include those from the last 4 weeks (more flexible)
+            // Some job boards may have delayed posting dates
+            const fourWeeksAgo = new Date();
+            fourWeeksAgo.setDate(fourWeeksAgo.getDate() - 28);
+            
             const filteredJobs = jobs.filter(job => {
+                // If no date, include the job
+                if (!job.created) return true;
                 const jobDate = new Date(job.created);
-                return jobDate >= twoWeeksAgo;
+                // If date parsing fails, include the job
+                if (isNaN(jobDate.getTime())) return true;
+                return jobDate >= fourWeeksAgo;
             });
 
             // Merge with existing suggested jobs (avoid duplicates)
             const existingJobIds = new Set(this.suggestedJobs.map(j => j.id));
             const newJobs = filteredJobs.filter(job => !existingJobIds.has(job.id));
             
+            console.log(`Filtered ${jobs.length} jobs -> ${filteredJobs.length} recent -> ${newJobs.length} new`);
+            
             // Add new jobs to the list
             this.suggestedJobs = [...this.suggestedJobs, ...newJobs];
             this.saveSuggestedJobs();
+            
+            if (newJobs.length > 0) {
+                toast.show(`Found ${newJobs.length} new job opportunities!`, 'success');
+            }
 
         } catch (error) {
             console.error('Error fetching jobs:', error);
-            toast.show('Failed to fetch jobs. Showing cached results.', 'warning');
-            // Fallback: show mock jobs for demonstration
-            this.suggestedJobs = this.getMockJobs();
-            this.saveSuggestedJobs();
+            toast.show('Failed to fetch jobs. Please try again or check your internet connection.', 'warning');
+            // Don't overwrite existing cached jobs with empty data
+            if (this.suggestedJobs.length === 0) {
+                // Show helpful message in UI
+                const listEl = document.getElementById('suggested-jobs-list');
+                const emptyEl = document.getElementById('suggested-jobs-empty');
+                if (listEl) listEl.innerHTML = '';
+                if (emptyEl) {
+                    emptyEl.style.display = 'block';
+                    emptyEl.innerHTML = `
+                        <p style="margin-bottom: 12px;">Unable to fetch jobs from job boards.</p>
+                        <p style="font-size: 0.9em; opacity: 0.8;">
+                            This app fetches real jobs from Remotive and Arbeitnow APIs.<br>
+                            Check your internet connection and click "Refresh" to try again.
+                        </p>
+                    `;
+                }
+            }
         } finally {
             loadingEl.style.display = 'none';
             this.announce(`Loaded ${this.suggestedJobs.length} suggested jobs`);
@@ -1301,57 +1329,210 @@ class JobTracker {
     }
 
     async searchJobsFromAPI(locations, roles, skills, dateFrom) {
-        // Try to load API config
-        let apiConfig = null;
+        const allJobs = [];
+        
+        // Search keywords based on profile roles
+        const searchTerms = roles.slice(0, 3).map(role => 
+            role.toLowerCase().replace(/senior |lead |junior /gi, '').trim()
+        );
+        
+        // 1. Try Remotive API (free, no API key, remote jobs)
         try {
-            // Try to fetch the config file
-            const configResponse = await fetch('job-api-config.js');
-            // Note: This won't work directly, but provides structure for API integration
-        } catch (e) {
-            console.log('API config not found, using mock data');
+            const remotiveJobs = await this.fetchRemotiveJobs(searchTerms);
+            allJobs.push(...remotiveJobs);
+            console.log(`Fetched ${remotiveJobs.length} jobs from Remotive`);
+        } catch (error) {
+            console.warn('Remotive API error:', error.message);
         }
-
-        // For production use, integrate with real APIs here:
-        // 1. Adzuna API (https://developer.adzuna.com/) - Free tier available
-        // 2. Reed API (https://www.reed.co.uk/developers) - Requires API key
-        // 3. SerpAPI (https://serpapi.com/) - Paid service
-        // 4. Custom backend proxy to avoid CORS issues
-
-        // Example Adzuna API call (uncomment and configure):
-        /*
-        const jobs = [];
-        for (const location of locations) {
-            const countryCode = this.getCountryCode(location);
-            const url = `https://api.adzuna.com/v1/api/jobs/${countryCode}/search/1?app_id=YOUR_APP_ID&app_key=YOUR_APP_KEY&results_per_page=20&what=${encodeURIComponent(roles.join(' OR '))}&where=${encodeURIComponent(location)}&sort_by=date`;
+        
+        // 2. Try Arbeitnow API (free, no API key, EU jobs)
+        try {
+            const arbeitnowJobs = await this.fetchArbeitnowJobs(searchTerms);
+            allJobs.push(...arbeitnowJobs);
+            console.log(`Fetched ${arbeitnowJobs.length} jobs from Arbeitnow`);
+        } catch (error) {
+            console.warn('Arbeitnow API error:', error.message);
+        }
+        
+        // 3. Try Adzuna API if configured (requires API key)
+        if (window.JobAPIConfig?.adzuna?.enabled && window.JobAPIConfig?.adzuna?.appId) {
             try {
+                const adzunaJobs = await this.fetchAdzunaJobs(locations, roles);
+                allJobs.push(...adzunaJobs);
+                console.log(`Fetched ${adzunaJobs.length} jobs from Adzuna`);
+            } catch (error) {
+                console.warn('Adzuna API error:', error.message);
+            }
+        }
+        
+        // If we got real jobs, return them
+        if (allJobs.length > 0) {
+            // Deduplicate by URL
+            const seen = new Set();
+            const uniqueJobs = allJobs.filter(job => {
+                if (seen.has(job.url)) return false;
+                seen.add(job.url);
+                return true;
+            });
+            return uniqueJobs;
+        }
+        
+        // Fallback: return empty array (no mock data)
+        console.log('No jobs found from APIs');
+        return [];
+    }
+    
+    async fetchRemotiveJobs(searchTerms) {
+        // Remotive API - Free, no auth required
+        // Docs: https://remotive.com/api/remote-jobs
+        const jobs = [];
+        
+        // Map our search terms to Remotive categories
+        const categoryMap = {
+            'product designer': 'design',
+            'ux designer': 'design',
+            'ui designer': 'design',
+            'design': 'design',
+            'product engineer': 'software-dev',
+            'software engineer': 'software-dev',
+            'frontend': 'software-dev',
+            'engineer': 'software-dev'
+        };
+        
+        // Find matching categories
+        const categories = new Set();
+        for (const term of searchTerms) {
+            for (const [keyword, category] of Object.entries(categoryMap)) {
+                if (term.includes(keyword) || keyword.includes(term)) {
+                    categories.add(category);
+                }
+            }
+        }
+        
+        // Default to design if no match
+        if (categories.size === 0) {
+            categories.add('design');
+        }
+        
+        for (const category of categories) {
+            try {
+                const response = await fetch(`https://remotive.com/api/remote-jobs?category=${category}&limit=25`);
+                if (!response.ok) continue;
+                
+                const data = await response.json();
+                if (data.jobs && Array.isArray(data.jobs)) {
+                    const mappedJobs = data.jobs.map(job => ({
+                        id: `remotive-${job.id}`,
+                        title: job.title,
+                        company: job.company_name || 'Unknown',
+                        location: job.candidate_required_location || 'Remote',
+                        url: job.url,
+                        description: job.description ? this.stripHtml(job.description).substring(0, 300) + '...' : '',
+                        created: job.publication_date,
+                        salary: job.salary || null,
+                        type: job.job_type || 'Full-time',
+                        remote: 'Remote',
+                        source: 'Remotive'
+                    }));
+                    jobs.push(...mappedJobs);
+                }
+            } catch (error) {
+                console.warn(`Remotive category ${category} error:`, error.message);
+            }
+        }
+        
+        return jobs;
+    }
+    
+    async fetchArbeitnowJobs(searchTerms) {
+        // Arbeitnow API - Free, no auth required, EU-focused
+        // Docs: https://www.arbeitnow.com/api
+        const jobs = [];
+        
+        try {
+            const response = await fetch('https://www.arbeitnow.com/api/job-board-api');
+            if (!response.ok) return jobs;
+            
+            const data = await response.json();
+            if (data.data && Array.isArray(data.data)) {
+                // Filter jobs by search terms
+                const relevantJobs = data.data.filter(job => {
+                    const title = job.title?.toLowerCase() || '';
+                    const description = job.description?.toLowerCase() || '';
+                    return searchTerms.some(term => 
+                        title.includes(term) || description.includes(term)
+                    );
+                }).slice(0, 25);
+                
+                const mappedJobs = relevantJobs.map(job => ({
+                    id: `arbeitnow-${job.slug}`,
+                    title: job.title,
+                    company: job.company_name || 'Unknown',
+                    location: job.location || 'Remote',
+                    url: job.url,
+                    description: job.description ? this.stripHtml(job.description).substring(0, 300) + '...' : '',
+                    created: job.created_at,
+                    salary: null,
+                    type: 'Full-time',
+                    remote: job.remote ? 'Remote' : 'On-site',
+                    source: 'Arbeitnow'
+                }));
+                jobs.push(...mappedJobs);
+            }
+        } catch (error) {
+            console.warn('Arbeitnow API error:', error.message);
+        }
+        
+        return jobs;
+    }
+    
+    async fetchAdzunaJobs(locations, roles) {
+        // Adzuna API - Requires API key from https://developer.adzuna.com/
+        const jobs = [];
+        const config = window.JobAPIConfig?.adzuna;
+        
+        if (!config?.appId || !config?.appKey) return jobs;
+        
+        for (const location of locations.slice(0, 3)) {
+            const countryCode = this.getCountryCode(location);
+            const searchQuery = roles.slice(0, 2).join(' OR ');
+            
+            try {
+                const url = `https://api.adzuna.com/v1/api/jobs/${countryCode}/search/1?app_id=${config.appId}&app_key=${config.appKey}&results_per_page=20&what=${encodeURIComponent(searchQuery)}&where=${encodeURIComponent(location)}&sort_by=date`;
+                
                 const response = await fetch(url);
+                if (!response.ok) continue;
+                
                 const data = await response.json();
                 if (data.results) {
-                    jobs.push(...data.results.map(result => ({
-                        id: result.id || `adzuna-${result.guid}`,
+                    const mappedJobs = data.results.map(result => ({
+                        id: `adzuna-${result.id}`,
                         title: result.title,
                         company: result.company?.display_name || 'Unknown',
                         location: result.location?.display_name || location,
                         url: result.redirect_url,
-                        description: result.description,
+                        description: result.description || '',
                         created: result.created,
                         salary: result.salary_min && result.salary_max 
-                            ? `${result.salary_min} - ${result.salary_max} ${result.salary_is_predicted ? '(est.)' : ''}`
+                            ? `${Math.round(result.salary_min)} - ${Math.round(result.salary_max)}${result.salary_is_predicted ? ' (est.)' : ''}`
                             : null,
                         type: result.contract_type || 'Full-time',
-                        remote: result.remote ? 'Remote' : 'On-site'
-                    })));
+                        remote: result.remote ? 'Remote' : 'On-site',
+                        source: 'Adzuna'
+                    }));
+                    jobs.push(...mappedJobs);
                 }
             } catch (error) {
-                console.error(`Error fetching jobs for ${location}:`, error);
+                console.warn(`Adzuna ${location} error:`, error.message);
             }
         }
+        
         return jobs;
-        */
-
-        // For now, return mock data that demonstrates the structure
-        // Replace this with actual API calls above
-        return this.getMockJobs();
+    }
+    
+    stripHtml(html) {
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        return doc.body.textContent || '';
     }
 
     getCountryCode(location) {
@@ -1372,67 +1553,27 @@ class JobTracker {
     }
 
     getMockJobs() {
-        // Mock jobs for demonstration - replace with real API calls
-        const twoWeeksAgo = new Date();
-        twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
-        
-        const mockJobs = [
-            {
-                id: 'job-1',
-                title: 'Senior Product Designer',
-                company: 'TechCorp Dublin',
-                location: 'Dublin, Ireland',
-                url: 'https://example.com/job1',
-                description: 'Looking for a Senior Product Designer with experience in design systems and data-driven design.',
-                created: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days ago
-                salary: '€70,000 - €90,000',
-                type: 'Full-time',
-                remote: 'Hybrid',
-                source: 'LinkedIn'
-            },
-            {
-                id: 'job-2',
-                title: 'Product Engineer',
-                company: 'InnovateNL',
-                location: 'Amsterdam, Netherlands',
-                url: 'https://example.com/job2',
-                description: 'Product Engineer role focusing on design systems and user experience optimization.',
-                created: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(), // 8 days ago
-                salary: '€65,000 - €85,000',
-                type: 'Full-time',
-                remote: 'Remote',
-                source: 'Indeed'
-            },
-            {
-                id: 'job-3',
-                title: 'UX Engineer',
-                company: 'DesignFirst',
-                location: 'Eindhoven, Netherlands',
-                url: 'https://example.com/job3',
-                description: 'UX Engineer position requiring strong design thinking and technical product skills.',
-                created: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString(), // 12 days ago
-                salary: '€60,000 - €80,000',
-                type: 'Full-time',
-                remote: 'Hybrid',
-                source: 'Company Website'
-            },
-            {
-                id: 'job-4',
-                title: 'Senior Software Engineer',
-                company: 'TechStart Dublin',
-                location: 'Dublin, Ireland',
-                url: 'https://example.com/job4',
-                description: 'Senior Software Engineer with experience in modern web technologies.',
-                created: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(), // 20 days ago (deprecated)
-                salary: '€75,000 - €95,000',
-                type: 'Full-time',
-                remote: 'Hybrid',
-                source: 'Adzuna'
-            }
-        ];
-
-        // Return all jobs (including deprecated ones)
-        return mockJobs;
+        // This method now returns an empty array
+        // Real jobs are fetched from Remotive, Arbeitnow, and Adzuna APIs
+        // If you want demo data, set window.USE_DEMO_DATA = true before loading
+        if (window.USE_DEMO_DATA) {
+            return [
+                {
+                    id: 'demo-1',
+                    title: '[DEMO] Product Designer Position',
+                    company: 'Demo Company',
+                    location: 'Remote',
+                    url: '#demo-job',
+                    description: 'This is demo data. Click "Refresh" to fetch real jobs from job boards.',
+                    created: new Date().toISOString(),
+                    salary: 'N/A',
+                    type: 'Demo',
+                    remote: 'Remote',
+                    source: 'Demo Data'
+                }
+            ];
+        }
+        return [];
     }
 
     renderSuggestedJobs() {
